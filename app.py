@@ -36,8 +36,8 @@ CUENTAS_VEN = [
 RENGLONES_CONTAB = [
     {"id": "r01", "num": 1, "label": "Seleccionar y Ejecutar Archivo", "rama": "rama_directo", "ico": "ico-doc"},
     {"id": "r02", "num": 2, "label": "Destino del Archivo (BG / ER)", "rama": "rama_directo", "ico": "ico-doc"},
-    {"id": "r03", "num": 3, "label": "Balance General VEN", "rama": "rama_directo", "ico": "ico-chart"},
-    {"id": "r04", "num": 4, "label": "Estado Resultados VEN", "rama": "rama_directo", "ico": "ico-chart"},
+    {"id": "r03", "num": 3, "label": "Balance General VEN (Editable)", "rama": "rama_directo", "ico": "ico-chart"},
+    {"id": "r04", "num": 4, "label": "Estado Resultados VEN (Editable)", "rama": "rama_directo", "ico": "ico-chart"},
     {"id": "r05", "num": 5, "label": "Activo Corriente", "rama": "rama_directo", "ico": "ico-coin"},
     {"id": "r06", "num": 6, "label": "Activo No Corriente", "rama": "rama_directo", "ico": "ico-coin"},
     {"id": "r07", "num": 7, "label": "Pasivo Corriente", "rama": "rama_directo", "ico": "ico-doc"},
@@ -161,6 +161,13 @@ HTML_CONTAB = """<!DOCTYPE html>
       padding: 11px 14px;
       font-size: 0.94rem;
       margin-bottom: 16px;
+    }
+    .inp-inline {
+      width: 150px;
+      margin-bottom: 0;
+      padding: 7px 10px;
+      font-size: 0.88rem;
+      display: inline-block;
     }
     input:focus, select:focus, textarea:focus { outline: none; border-color: var(--fucsia); }
 
@@ -298,7 +305,7 @@ HTML_CONTAB = """<!DOCTYPE html>
 
     .split-directo {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(390px, 1fr));
       gap: 22px;
       margin-bottom: 24px;
     }
@@ -334,14 +341,14 @@ HTML_CONTAB = """<!DOCTYPE html>
 
     .table-wrap {
       overflow-x: auto;
-      max-height: 360px;
+      max-height: 380px;
       overflow-y: auto;
       border: 1px solid var(--border);
       border-radius: 8px;
       margin-bottom: 18px;
     }
     table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
-    th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: left; }
+    th, td { border: 1px solid var(--border); padding: 9px 12px; text-align: left; }
     th { background: var(--panel); position: sticky; top: 0; z-index: 2; color: #f9a8d4; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.05em; }
 
     .alert-err {
@@ -445,7 +452,7 @@ HTML_CONTAB = """<!DOCTYPE html>
     <div class="ramas-bar">
       <button type="button" class="rama-btn {% if active_rama == 'rama_directo' %}active{% endif %}" onclick="openRama('rama_directo', this)">
         <span class="rama-title">Rama 1 · Flujo Directo &amp; Estados VEN</span>
-        <span class="rama-desc">Balance General y Estado de Resultados editables + Seleccionar y Ejecutar Archivo</span>
+        <span class="rama-desc">Balance General y Estado de Resultados editables en blanco + Seleccionar y Ejecutar Archivo</span>
       </button>
       <button type="button" class="rama-btn {% if active_rama == 'rama_libros' %}active{% endif %}" onclick="openRama('rama_libros', this)">
         <span class="rama-title">Rama 2 · Libros, Tributos y Cierre</span>
@@ -471,14 +478,14 @@ HTML_CONTAB = """<!DOCTYPE html>
 
       <main class="main-stage">
         <div id="renglon_banner" class="renglon-banner">
-          Renglón activo: <strong id="renglon_activo_txt">{{ active_renglon_label }}</strong> · Selecciona un archivo en cualquier momento y ejecútalo directo hacia tus estados o libros.
+          Renglón activo: <strong id="renglon_activo_txt">{{ active_renglon_label }}</strong> · Inicia en blanco, escribe directo en los estados o selecciona y ejecuta un archivo.
         </div>
 
-        <!-- RAMA 1: FLUJO DIRECTO (ESTADOS VEN EDITABLES + SELECCIONAR Y EJECUTAR ARCHIVO) -->
         <div id="rama_directo" class="rama-sec {% if active_rama != 'rama_directo' %}hidden{% endif %}">
           <div class="split-directo">
+            <!-- ESTADOS EDITABLES DIRECTAMENTE EN BLANCO -->
             <div class="card card-bg">
-              <h2 style="margin-top:0;color:#f9a8d4;text-transform:uppercase;letter-spacing:0.05em;">Estados Financieros · Venezuela</h2>
+              <h2 style="margin-top:0;color:#f9a8d4;text-transform:uppercase;letter-spacing:0.05em;">Estados Financieros · Venezuela (Editable)</h2>
               <div class="kpi-row">
                 <div class="kpi"><div class="kpi-lbl">Activo Total</div><div class="kpi-val" style="color:var(--ok)">{{ bg.activo_total }}</div></div>
                 <div class="kpi"><div class="kpi-lbl">Pasivo Total</div><div class="kpi-val" style="color:#f472b6">{{ bg.pasivo_total }}</div></div>
@@ -486,51 +493,62 @@ HTML_CONTAB = """<!DOCTYPE html>
                 <div class="kpi"><div class="kpi-lbl">Utilidad / Pérdida Neta</div><div class="kpi-val" style="color:var(--ok)">{{ er.utilidad_neta }}</div></div>
               </div>
 
-              <h3 style="color:#f9a8d4;margin:18px 0 10px;">Estado de Resultados Completo (Venezuela)</h3>
-              <div class="table-wrap">
-                <table>
-                  <thead><tr><th>Renglón del Estado de Resultados</th><th>Monto</th></tr></thead>
-                  <tbody>
-                    <tr><td>Ingresos Operativos (Ventas / Cobros)</td><td>{{ er.ingresos_operativos }}</td></tr>
-                    <tr><td>(-) Costo de Ventas / Compras</td><td>{{ er.costo_ventas }}</td></tr>
-                    <tr><td><strong>Utilidad Bruta</strong></td><td><strong>{{ er.utilidad_bruta }}</strong></td></tr>
-                    <tr><td>(-) Gastos Administrativos y Operativos</td><td>{{ er.gastos_operativos }}</td></tr>
-                    <tr><td><strong>Utilidad / (Pérdida) Operativa</strong></td><td><strong>{{ er.utilidad_operativa }}</strong></td></tr>
-                    <tr><td>(+/-) Otros Ingresos / Egresos</td><td>{{ er.otros_neto }}</td></tr>
-                    <tr><td>(-) Estimación ISLR (Referencial)</td><td>{{ er.islr_est }}</td></tr>
-                    <tr><td><strong>Utilidad / (Pérdida) Neta del Período</strong></td><td><strong>{{ er.utilidad_neta }}</strong></td></tr>
-                  </tbody>
-                </table>
-              </div>
+              <form method="POST">
+                <input type="hidden" name="codigo" value="{{ codigo }}" />
+                <input type="hidden" name="active_rama" value="rama_directo" />
+                <input type="hidden" name="accion" value="guardar_estados_editables" />
 
-              <h3 style="color:#f9a8d4;margin:18px 0 10px;">Balance General Completo (Venezuela)</h3>
-              <div class="table-wrap">
-                <table>
-                  <thead><tr><th>Sección del Balance General</th><th>Monto</th></tr></thead>
-                  <tbody>
-                    <tr><td><strong>ACTIVO CORRIENTE</strong></td><td><strong>{{ bg.activo_corriente }}</strong></td></tr>
-                    <tr><td>· Efectivo, Caja y Bancos</td><td>{{ bg.efectivo_bancos }}</td></tr>
-                    <tr><td>· Cuentas por Cobrar Comerciales</td><td>{{ bg.cxc_total }}</td></tr>
-                    <tr><td><strong>ACTIVO NO CORRIENTE</strong></td><td><strong>{{ bg.activo_no_corriente }}</strong></td></tr>
-                    <tr><td>· Propiedad, Planta y Equipo (Neto)</td><td>{{ bg.ppe_neto }}</td></tr>
-                    <tr><td><strong>TOTAL ACTIVO</strong></td><td><strong>{{ bg.activo_total }}</strong></td></tr>
-                    <tr><td><strong>PASIVO CORRIENTE</strong></td><td><strong>{{ bg.pasivo_corriente }}</strong></td></tr>
-                    <tr><td>· Cuentas por Pagar / Retenciones</td><td>{{ bg.cxp_total }}</td></tr>
-                    <tr><td><strong>PASIVO NO CORRIENTE</strong></td><td><strong>{{ bg.pasivo_no_corriente }}</strong></td></tr>
-                    <tr><td><strong>TOTAL PASIVO</strong></td><td><strong>{{ bg.pasivo_total }}</strong></td></tr>
-                    <tr><td><strong>PATRIMONIO</strong></td><td><strong>{{ bg.patrimonio_total }}</strong></td></tr>
-                    <tr><td>· Capital Social</td><td>{{ bg.capital_social }}</td></tr>
-                    <tr><td>· Resultado Acumulado / del Período</td><td>{{ bg.resultado_patrimonio }}</td></tr>
-                    <tr><td><strong>TOTAL PASIVO + PATRIMONIO</strong></td><td><strong>{{ bg.pasivo_mas_patrimonio }}</strong></td></tr>
-                  </tbody>
-                </table>
-              </div>
+                <h3 style="color:#f9a8d4;margin:14px 0 10px;">Estado de Resultados (Escribe y edita directo)</h3>
+                <div class="table-wrap">
+                  <table>
+                    <thead><tr><th>Renglón del Estado de Resultados</th><th>Valor</th></tr></thead>
+                    <tbody>
+                      <tr><td>Ingresos Operativos</td><td><input class="inp-inline" type="number" step="any" name="er_ingresos" value="{{ raw_est.er_ingresos }}" /></td></tr>
+                      <tr><td>(-) Costo de Ventas</td><td><input class="inp-inline" type="number" step="any" name="er_costos" value="{{ raw_est.er_costos }}" /></td></tr>
+                      <tr><td><strong>Utilidad Bruta (Calculado)</strong></td><td><strong>{{ er.utilidad_bruta }}</strong></td></tr>
+                      <tr><td>(-) Gastos Administrativos y Operativos</td><td><input class="inp-inline" type="number" step="any" name="er_gastos" value="{{ raw_est.er_gastos }}" /></td></tr>
+                      <tr><td><strong>Utilidad / (Pérdida) Operativa (Calculado)</strong></td><td><strong>{{ er.utilidad_operativa }}</strong></td></tr>
+                      <tr><td>(+/-) Otros Ingresos / Egresos</td><td><input class="inp-inline" type="number" step="any" name="er_otros" value="{{ raw_est.er_otros }}" /></td></tr>
+                      <tr><td>(-) Estimación ISLR</td><td><input class="inp-inline" type="number" step="any" name="er_islr" value="{{ raw_est.er_islr }}" /></td></tr>
+                      <tr><td><strong>Utilidad / (Pérdida) Neta (Calculado)</strong></td><td><strong>{{ er.utilidad_neta }}</strong></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <h3 style="color:#f9a8d4;margin:16px 0 10px;">Balance General (Escribe y edita directo)</h3>
+                <div class="table-wrap">
+                  <table>
+                    <thead><tr><th>Partida del Balance General</th><th>Valor</th></tr></thead>
+                    <tbody>
+                      <tr><td><strong>ACTIVO CORRIENTE</strong></td><td><strong>{{ bg.activo_corriente }}</strong></td></tr>
+                      <tr><td>· Efectivo, Caja y Bancos</td><td><input class="inp-inline" type="number" step="any" name="bg_efectivo" value="{{ raw_est.bg_efectivo }}" /></td></tr>
+                      <tr><td>· Cuentas por Cobrar</td><td><input class="inp-inline" type="number" step="any" name="bg_cxc" value="{{ raw_est.bg_cxc }}" /></td></tr>
+                      <tr><td>· Inventario</td><td><input class="inp-inline" type="number" step="any" name="bg_inv" value="{{ raw_est.bg_inv }}" /></td></tr>
+                      <tr><td><strong>ACTIVO NO CORRIENTE</strong></td><td><strong>{{ bg.activo_no_corriente }}</strong></td></tr>
+                      <tr><td>· Propiedad, Planta y Equipo (Neto)</td><td><input class="inp-inline" type="number" step="any" name="bg_ppe" value="{{ raw_est.bg_ppe }}" /></td></tr>
+                      <tr><td><strong>TOTAL ACTIVO (Calculado)</strong></td><td><strong>{{ bg.activo_total }}</strong></td></tr>
+                      <tr><td><strong>PASIVO CORRIENTE</strong></td><td><strong>{{ bg.pasivo_corriente }}</strong></td></tr>
+                      <tr><td>· Cuentas por Pagar / Retenciones</td><td><input class="inp-inline" type="number" step="any" name="bg_cxp" value="{{ raw_est.bg_cxp }}" /></td></tr>
+                      <tr><td><strong>PASIVO NO CORRIENTE</strong></td><td><strong>{{ bg.pasivo_no_corriente }}</strong></td></tr>
+                      <tr><td>· Obligaciones a Largo Plazo</td><td><input class="inp-inline" type="number" step="any" name="bg_pas_lp" value="{{ raw_est.bg_pas_lp }}" /></td></tr>
+                      <tr><td><strong>TOTAL PASIVO (Calculado)</strong></td><td><strong>{{ bg.pasivo_total }}</strong></td></tr>
+                      <tr><td><strong>PATRIMONIO</strong></td><td><strong>{{ bg.patrimonio_total }}</strong></td></tr>
+                      <tr><td>· Capital Social</td><td><input class="inp-inline" type="number" step="any" name="bg_capital" value="{{ raw_est.bg_capital }}" /></td></tr>
+                      <tr><td>· Utilidades / Resultados Acumulados</td><td><input class="inp-inline" type="number" step="any" name="bg_util_ac" value="{{ raw_est.bg_util_ac }}" /></td></tr>
+                      <tr><td><strong>TOTAL PASIVO + PATRIMONIO</strong></td><td><strong>{{ bg.pasivo_mas_patrimonio }}</strong></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <button type="submit" class="btn-fucsia">Guardar cambios directos en Estados</button>
+              </form>
             </div>
 
+            <!-- SELECCIONAR Y EJECUTAR ARCHIVO -->
             <div class="card card-file">
               <h2 style="margin-top:0;color:#f9a8d4;text-transform:uppercase;letter-spacing:0.05em;">Seleccionar y Ejecutar Archivo</h2>
               <p style="color:var(--muted);font-size:0.88rem;line-height:1.5;margin-bottom:18px;">
-                Selecciona un archivo o pega las líneas y ejecútalo directo al Balance General, Estado de Resultados o libros.
+                Selecciona un archivo o escribe/pega tus líneas y ejecútalo para sumarlas directo al Balance General, Estado de Resultados o libros.
               </p>
 
               <form method="POST" enctype="multipart/form-data">
@@ -541,8 +559,8 @@ HTML_CONTAB = """<!DOCTYPE html>
                 <label for="dir_archivo">Seleccionar un archivo (.csv, .txt, .json)</label>
                 <input id="dir_archivo" name="dir_archivo" type="file" accept=".csv,.txt,.json" />
 
-                <label for="dir_texto">O pegar líneas (Fecha, Tipo, Cuenta, Concepto, Monto)</label>
-                <textarea id="dir_texto" name="dir_texto" rows="5" placeholder="2026-11-22, ENTRADA, Banco Nacional, Ingreso directo, 1200"></textarea>
+                <label for="dir_texto">O escribir / pegar líneas (Fecha, Tipo, Cuenta, Concepto, Monto)</label>
+                <textarea id="dir_texto" name="dir_texto" rows="5" placeholder=""></textarea>
 
                 <label for="dir_destino">¿Dónde meter esta información al ejecutar?</label>
                 <select id="dir_destino" name="dir_destino">
@@ -587,43 +605,8 @@ HTML_CONTAB = """<!DOCTYPE html>
             </div>
           </div>
 
-          <!-- EDICION DIRECTA DE PARTIDAS Y MOVIMIENTOS -->
           <div class="card">
-            <h3 style="margin-top:0;color:#f9a8d4;">Edición directa de valores (Balance General / Resultados / Cuentas)</h3>
-            <form method="POST" class="grid-2" style="align-items:end;">
-              <input type="hidden" name="codigo" value="{{ codigo }}" />
-              <input type="hidden" name="active_rama" value="rama_directo" />
-              <input type="hidden" name="accion" value="editar_partida_directa" />
-
-              <div>
-                <label for="ed_tipo">Tipo de registro a editar</label>
-                <select id="ed_tipo" name="ed_tipo">
-                  <option value="ENTRADA">ENTRADA (Ingreso / Aporte / Cobro)</option>
-                  <option value="SALIDA">SALIDA (Costo / Gasto / Pago)</option>
-                  <option value="COBRAR">Cuenta por Cobrar (Cliente)</option>
-                  <option value="PAGAR">Cuenta por Pagar (Proveedor)</option>
-                </select>
-              </div>
-              <div>
-                <label for="ed_cta">Cuenta o Nombre</label>
-                <input id="ed_cta" name="ed_cuenta" type="text" placeholder="Ej: Banco Nacional, Capital Social, Ventas" required />
-              </div>
-              <div>
-                <label for="ed_con">Concepto o Documento</label>
-                <input id="ed_con" name="ed_concepto" type="text" placeholder="Ej: Ajuste directo o Factura" required />
-              </div>
-              <div>
-                <label for="ed_mon">Monto</label>
-                <input id="ed_mon" name="ed_monto" type="number" step="any" required />
-              </div>
-              <div style="grid-column:1/-1;">
-                <button type="submit" class="btn-fucsia">Aplicar edición directa</button>
-              </div>
-            </form>
-          </div>
-
-          <div class="card">
-            <h3 style="margin-top:0;color:#f9a8d4;">Movimientos conectados al sistema</h3>
+            <h3 style="margin-top:0;color:#f9a8d4;">Movimientos registrados</h3>
             <div class="table-wrap">
               <table>
                 <thead><tr><th>#</th><th>Fecha</th><th>Tipo</th><th>Cuenta</th><th>Concepto</th><th>Monto</th></tr></thead>
@@ -638,7 +621,7 @@ HTML_CONTAB = """<!DOCTYPE html>
                       <td>{{ m.monto }}</td>
                     </tr>
                   {% else %}
-                    <tr><td colspan="6" style="color:var(--muted)">Sin movimientos cargados.</td></tr>
+                    <tr><td colspan="6" style="color:var(--muted)">Sin movimientos todavía. Escribe arriba o ejecuta un archivo.</td></tr>
                   {% endfor %}
                 </tbody>
               </table>
@@ -646,13 +629,12 @@ HTML_CONTAB = """<!DOCTYPE html>
           </div>
         </div>
 
-        <!-- RAMA 2: LIBROS, TRIBUTOS, CXC/CXP, CIERRE Y ESTILO -->
         <div id="rama_libros" class="rama-sec {% if active_rama != 'rama_libros' %}hidden{% endif %}">
           <h2 style="margin-top:0;color:#f9a8d4;text-transform:uppercase;letter-spacing:0.05em;">Libros, Tributos, Cuentas y Cierre</h2>
 
           <div class="grid-2">
             <form method="POST" class="card">
-              <h3 style="margin-top:0;color:#f9a8d4;">Entrada / Salida rápida</h3>
+              <h3 style="margin-top:0;color:#f9a8d4;">Entrada / Salida</h3>
               <input type="hidden" name="codigo" value="{{ codigo }}" />
               <input type="hidden" name="active_rama" value="rama_libros" />
               <input type="hidden" name="accion" value="agregar_mov" />
@@ -680,9 +662,9 @@ HTML_CONTAB = """<!DOCTYPE html>
               <input type="hidden" name="active_rama" value="rama_libros" />
               <input type="hidden" name="accion" value="agregar_asiento" />
               <label for="a_cta">Cuenta</label>
-              <input id="a_cta" name="as_cuenta" type="text" placeholder="Ej: Banco Nacional" required />
+              <input id="a_cta" name="as_cuenta" type="text" required />
               <label for="a_ref">Referencia</label>
-              <input id="a_ref" name="as_ref" type="text" placeholder="Ej: Asiento #1" required />
+              <input id="a_ref" name="as_ref" type="text" required />
               <div class="grid-2">
                 <div><label for="a_d">Debe</label><input id="a_d" name="as_debe" type="number" step="any" value="0" /></div>
                 <div><label for="a_h">Haber</label><input id="a_h" name="as_haber" type="number" step="any" value="0" /></div>
@@ -699,6 +681,8 @@ HTML_CONTAB = """<!DOCTYPE html>
                 <tbody>
                   {% for r in libro_mayor %}
                     <tr><td><strong>{{ r.cuenta }}</strong></td><td>{{ r.debe }}</td><td>{{ r.haber }}</td><td>{{ r.saldo }}</td></tr>
+                  {% else %}
+                    <tr><td colspan="4" style="color:var(--muted)">Sin asientos registrados todavía.</td></tr>
                   {% endfor %}
                 </tbody>
               </table>
@@ -717,9 +701,9 @@ HTML_CONTAB = """<!DOCTYPE html>
                 <option value="COMPRA">COMPRA (Crédito Fiscal)</option>
               </select>
               <label for="f_rif">RIF</label>
-              <input id="f_rif" name="fac_rif" type="text" placeholder="J-12345678-9" required />
+              <input id="f_rif" name="fac_rif" type="text" required />
               <label for="f_ctrl">N.º Control</label>
-              <input id="f_ctrl" name="fac_control" type="text" placeholder="00-00100" />
+              <input id="f_ctrl" name="fac_control" type="text" />
               <label for="f_base">Base imponible</label>
               <input id="f_base" name="fac_base" type="number" step="any" required />
               <div class="grid-3">
@@ -760,7 +744,7 @@ HTML_CONTAB = """<!DOCTYPE html>
               <label for="c_ter">Cliente / Proveedor</label>
               <input id="c_ter" name="cx_tercero" type="text" required />
               <label for="c_doc">Documento</label>
-              <input id="c_doc" name="cx_doc" type="text" placeholder="Fact-01" />
+              <input id="c_doc" name="cx_doc" type="text" />
               <label for="c_mon">Monto</label>
               <input id="c_mon" name="cx_monto" type="number" step="any" required />
               <button type="submit" class="btn-fucsia">Agregar cuenta</button>
@@ -798,7 +782,6 @@ HTML_CONTAB = """<!DOCTYPE html>
           </div>
         </div>
 
-        <!-- RAMA 3: ACTUALIZACIONES, CURSOS DE LECTURA VERTICAL Y PRECIOS ACTUALES -->
         <div id="rama_aprender" class="rama-sec {% if active_rama != 'rama_aprender' %}hidden{% endif %}">
           <h2 style="margin-top:0;color:#f9a8d4;text-transform:uppercase;letter-spacing:0.05em;">Actualizaciones, Cursos y Precios Actuales</h2>
 
@@ -819,6 +802,8 @@ HTML_CONTAB = """<!DOCTYPE html>
                 <tbody>
                   {% for p in precios_actuales %}
                     <tr><td><strong>{{ p.concepto }}</strong></td><td>{{ p.valor }}</td><td>{{ p.nota }}</td></tr>
+                  {% else %}
+                    <tr><td colspan="3" style="color:var(--muted)">Sin precios cargados todavía. Agrega el tuyo abajo.</td></tr>
                   {% endfor %}
                 </tbody>
               </table>
@@ -923,64 +908,51 @@ def calcular_libro_mayor(asientos):
     ]
 
 
-def calcular_estados_venezuela(movimientos, cuentas_cx):
-    ingresos = sum(
-        float(m.get("monto", 0) or 0)
-        for m in movimientos
-        if m.get("tipo") == "ENTRADA" and "CAPITAL" not in str(m.get("cuenta", "")).upper()
-    )
-    costos = sum(
-        float(m.get("monto", 0) or 0)
-        for m in movimientos
-        if m.get("tipo") == "SALIDA"
-        and ("COSTO" in str(m.get("cuenta", "")).upper() or "COMPRA" in str(m.get("cuenta", "")).upper())
-    )
-    gastos = sum(
-        float(m.get("monto", 0) or 0)
-        for m in movimientos
-        if m.get("tipo") == "SALIDA"
-        and ("COSTO" not in str(m.get("cuenta", "")).upper() and "COMPRA" not in str(m.get("cuenta", "")).upper())
-    )
+def _f(val):
+    try:
+        return float(val or 0)
+    except (TypeError, ValueError):
+        return 0.0
 
+
+def calcular_estados_venezuela(sesion, movimientos):
+    raw = sesion["raw_est"]
+
+    mov_ing = sum(_f(m.get("monto")) for m in movimientos if m.get("tipo") == "ENTRADA" and "CAPITAL" not in str(m.get("cuenta", "")).upper())
+    mov_cos = sum(_f(m.get("monto")) for m in movimientos if m.get("tipo") == "SALIDA" and ("COSTO" in str(m.get("cuenta", "")).upper() or "COMPRA" in str(m.get("cuenta", "")).upper()))
+    mov_gas = sum(_f(m.get("monto")) for m in movimientos if m.get("tipo") == "SALIDA" and ("COSTO" not in str(m.get("cuenta", "")).upper() and "COMPRA" not in str(m.get("cuenta", "")).upper()))
+    mov_cap = sum(_f(m.get("monto")) for m in movimientos if "CAPITAL" in str(m.get("cuenta", "")).upper())
+
+    cxc_pend = sum(_f(c.get("monto")) for c in sesion["cuentas_cx"] if c.get("tipo") == "COBRAR" and c.get("estado") == "PENDIENTE")
+    cxp_pend = sum(_f(c.get("monto")) for c in sesion["cuentas_cx"] if c.get("tipo") == "PAGAR" and c.get("estado") == "PENDIENTE")
+
+    ingresos = _f(raw["er_ingresos"]) + mov_ing
+    costos = _f(raw["er_costos"]) + mov_cos
     utilidad_bruta = ingresos - costos
+    gastos = _f(raw["er_gastos"]) + mov_gas
     utilidad_operativa = utilidad_bruta - gastos
-    otros_neto = 0.0
-    islr_est = 0.0
-    utilidad_neta = utilidad_operativa + otros_neto - islr_est
+    otros = _f(raw["er_otros"])
+    islr = _f(raw["er_islr"])
+    utilidad_neta = utilidad_operativa + otros - islr
 
-    cxc_pend = sum(
-        float(c.get("monto", 0) or 0)
-        for c in cuentas_cx
-        if c.get("tipo") == "COBRAR" and c.get("estado") == "PENDIENTE"
-    )
-    cxp_pend = sum(
-        float(c.get("monto", 0) or 0)
-        for c in cuentas_cx
-        if c.get("tipo") == "PAGAR" and c.get("estado") == "PENDIENTE"
-    )
-    capital_aporte = sum(
-        float(m.get("monto", 0) or 0)
-        for m in movimientos
-        if "CAPITAL" in str(m.get("cuenta", "")).upper()
-    )
+    efectivo = _f(raw["bg_efectivo"]) + sum(_f(m.get("monto")) for m in movimientos if m.get("tipo") == "ENTRADA") - sum(_f(m.get("monto")) for m in movimientos if m.get("tipo") == "SALIDA")
+    cxc = _f(raw["bg_cxc"]) + cxc_pend
+    inv = _f(raw["bg_inv"])
+    activo_corriente = efectivo + cxc + inv
 
-    efectivo_bancos = sum(float(m.get("monto", 0) or 0) for m in movimientos if m.get("tipo") == "ENTRADA") - sum(
-        float(m.get("monto", 0) or 0) for m in movimientos if m.get("tipo") == "SALIDA"
-    )
-    activo_corriente = max(0.0, efectivo_bancos) + cxc_pend
-    ppe_neto = 0.0
-    activo_no_corriente = ppe_neto
+    ppe = _f(raw["bg_ppe"])
+    activo_no_corriente = ppe
     activo_total = activo_corriente + activo_no_corriente
 
-    pasivo_corriente = cxp_pend
-    pasivo_no_corriente = 0.0
+    cxp = _f(raw["bg_cxp"]) + cxp_pend
+    pasivo_corriente = cxp
+    pas_lp = _f(raw["bg_pas_lp"])
+    pasivo_no_corriente = pas_lp
     pasivo_total = pasivo_corriente + pasivo_no_corriente
 
-    resultado_pat = utilidad_neta
-    patrimonio_total = activo_total - pasivo_total
-    capital_social = capital_aporte if capital_aporte > 0 else (patrimonio_total - resultado_pat)
-    if capital_aporte > 0:
-        resultado_pat = patrimonio_total - capital_social
+    capital = _f(raw["bg_capital"]) + mov_cap
+    util_ac = _f(raw["bg_util_ac"]) + utilidad_neta
+    patrimonio_total = capital + util_ac
 
     er = {
         "ingresos_operativos": fmt_num(ingresos),
@@ -988,27 +960,28 @@ def calcular_estados_venezuela(movimientos, cuentas_cx):
         "utilidad_bruta": fmt_num(utilidad_bruta),
         "gastos_operativos": fmt_num(gastos),
         "utilidad_operativa": fmt_num(utilidad_operativa),
-        "otros_neto": fmt_num(otros_neto),
-        "islr_est": fmt_num(islr_est),
+        "otros_neto": fmt_num(otros),
+        "islr_est": fmt_num(islr),
         "utilidad_neta": fmt_num(utilidad_neta),
     }
     bg = {
         "activo_corriente": fmt_num(activo_corriente),
-        "efectivo_bancos": fmt_num(efectivo_bancos),
-        "cxc_total": fmt_num(cxc_pend),
+        "efectivo_bancos": fmt_num(efectivo),
+        "cxc_total": fmt_num(cxc),
         "activo_no_corriente": fmt_num(activo_no_corriente),
-        "ppe_neto": fmt_num(ppe_neto),
+        "ppe_neto": fmt_num(ppe),
         "activo_total": fmt_num(activo_total),
         "pasivo_corriente": fmt_num(pasivo_corriente),
-        "cxp_total": fmt_num(cxp_pend),
+        "cxp_total": fmt_num(cxp),
         "pasivo_no_corriente": fmt_num(pasivo_no_corriente),
         "pasivo_total": fmt_num(pasivo_total),
         "patrimonio_total": fmt_num(patrimonio_total),
-        "capital_social": fmt_num(capital_social),
-        "resultado_patrimonio": fmt_num(resultado_pat),
+        "capital_social": fmt_num(capital),
+        "resultado_patrimonio": fmt_num(util_ac),
         "pasivo_mas_patrimonio": fmt_num(pasivo_total + patrimonio_total),
     }
-    return er, bg
+    raw_fmt = {k: fmt_num(v) for k, v in raw.items()}
+    return er, bg, raw_fmt
 
 
 def parsear_lineas_contables(texto):
@@ -1050,31 +1023,30 @@ def obtener_sesion(codigo):
             "active_renglon_label": "Seleccionar y Ejecutar Archivo",
             "tono_fucsia": "#ec4899",
             "estado_cierre": "ABIERTO",
-            "cierre_obs": "Período listo para operación y cierre",
+            "cierre_obs": "",
             "orden_campo": "fecha",
             "orden_dir": "desc",
-            "tasa_ref": 45.0,
-            "movimientos": [
-                {"fecha": "2026-11-20", "tipo": "ENTRADA", "cuenta": "Banco Nacional", "concepto": "Cobro de servicios", "monto": 2500.0},
-                {"fecha": "2026-11-20", "tipo": "SALIDA", "cuenta": "Compras / Costos", "concepto": "Mercancía / insumos", "monto": 700.0},
-                {"fecha": "2026-11-21", "tipo": "SALIDA", "cuenta": "Gastos Administrativos", "concepto": "Operación y servicios", "monto": 300.0},
-                {"fecha": "2026-11-21", "tipo": "ENTRADA", "cuenta": "Capital Social", "concepto": "Aporte inicial de capital", "monto": 1000.0},
-            ],
-            "asientos": [
-                {"cuenta": "Banco Nacional", "ref": "Apertura", "debe": 2500.0, "haber": 0.0},
-                {"cuenta": "Ventas / Ingresos", "ref": "Apertura", "debe": 0.0, "haber": 2500.0},
-            ],
+            "tasa_ref": 0.0,
+            "raw_est": {
+                "er_ingresos": 0.0,
+                "er_costos": 0.0,
+                "er_gastos": 0.0,
+                "er_otros": 0.0,
+                "er_islr": 0.0,
+                "bg_efectivo": 0.0,
+                "bg_cxc": 0.0,
+                "bg_inv": 0.0,
+                "bg_ppe": 0.0,
+                "bg_cxp": 0.0,
+                "bg_pas_lp": 0.0,
+                "bg_capital": 0.0,
+                "bg_util_ac": 0.0,
+            },
+            "movimientos": [],
+            "asientos": [],
             "facturas": [],
-            "cuentas_cx": [
-                {"tipo": "COBRAR", "tercero": "Cliente Comercial C.A.", "doc": "Fact-101", "monto": 600.0, "estado": "PENDIENTE"},
-                {"tipo": "PAGAR", "tercero": "Proveedor General", "doc": "Fact-502", "monto": 350.0, "estado": "PENDIENTE"},
-            ],
-            "precios_actuales": [
-                {"concepto": "IVA General (referencia)", "valor": "16%", "nota": "Alícuota general referencial"},
-                {"concepto": "IVA Reducida (referencia)", "valor": "8%", "nota": "Alícuota reducida referencial"},
-                {"concepto": "Retención IVA habitual", "valor": "75% / 100%", "nota": "Según condición del agente"},
-                {"concepto": "Tasa referencial", "valor": "45.00", "nota": "Actualizable en Rama 2"},
-            ],
+            "cuentas_cx": [],
+            "precios_actuales": [],
         }
     return SESIONES_CONTAB[code]
 
@@ -1082,7 +1054,7 @@ def obtener_sesion(codigo):
 def render_contab(codigo, sesion, error_msg=None, aviso_msg=None):
     info = CODIGOS_ACCESO[codigo]
     movs_ord = ordenar_movimientos(sesion["movimientos"], sesion["orden_campo"], sesion["orden_dir"])
-    er, bg = calcular_estados_venezuela(movs_ord, sesion["cuentas_cx"])
+    er, bg, raw_fmt = calcular_estados_venezuela(sesion, movs_ord)
     return render_template_string(
         HTML_CONTAB,
         autorizado=True,
@@ -1100,7 +1072,7 @@ def render_contab(codigo, sesion, error_msg=None, aviso_msg=None):
         cierre_obs=sesion.get("cierre_obs", ""),
         orden_campo=sesion.get("orden_campo", "fecha"),
         orden_dir=sesion.get("orden_dir", "desc"),
-        tasa_ref=fmt_num(sesion.get("tasa_ref", 45.0)),
+        tasa_ref=fmt_num(sesion.get("tasa_ref", 0.0)),
         cuentas_ven=CUENTAS_VEN,
         renglones_menu=RENGLONES_CONTAB,
         cursos_y_actualizaciones=CURSOS_Y_ACTUALIZACIONES,
@@ -1109,6 +1081,7 @@ def render_contab(codigo, sesion, error_msg=None, aviso_msg=None):
         libro_mayor=calcular_libro_mayor(sesion["asientos"]),
         er=er,
         bg=bg,
+        raw_est=raw_fmt,
     )
 
 
@@ -1139,7 +1112,17 @@ def index():
                 return render_contab(codigo, sesion, error_msg="Límite de uso alcanzado.")
             sesion["uso"] += 1
 
-        if accion == "ejecutar_archivo_directo":
+        if accion == "guardar_estados_editables":
+            if sesion["estado_cierre"] == "CERRADO":
+                error = "El período está CERRADO. Reábrelo para editar."
+            else:
+                for k in sesion["raw_est"]:
+                    if k in request.form:
+                        sesion["raw_est"][k] = _f(request.form.get(k))
+                aviso = "Valores del Balance General y Estado de Resultados actualizados."
+            sesion["active_rama"] = "rama_directo"
+
+        elif accion == "ejecutar_archivo_directo":
             if sesion["estado_cierre"] == "CERRADO":
                 error = "El período está CERRADO. Reábrelo para cargar datos."
             else:
@@ -1157,7 +1140,7 @@ def index():
                                         "tipo": "SALIDA" if str(it.get("tipo", "")).upper() == "SALIDA" else "ENTRADA",
                                         "cuenta": str(it.get("cuenta") or "Banco Nacional"),
                                         "concepto": str(it.get("concepto") or "Importado"),
-                                        "monto": abs(float(it.get("monto", 0) or 0)),
+                                        "monto": abs(_f(it.get("monto"))),
                                     })
                     else:
                         filas.extend(parsear_lineas_contables(raw))
@@ -1205,40 +1188,6 @@ def index():
                     aviso = f"Archivo ejecutado: {len(filas)} cuenta(s) por {t_cx.lower()} agregadas."
             sesion["active_rama"] = "rama_directo"
 
-        elif accion == "editar_partida_directa":
-            if sesion["estado_cierre"] == "CERRADO":
-                error = "El período está CERRADO. Reábrelo para editar."
-            else:
-                ed_tipo = request.form.get("ed_tipo") or "ENTRADA"
-                ed_cta = (request.form.get("ed_cuenta") or "").strip()
-                ed_con = (request.form.get("ed_concepto") or "Edición directa").strip()
-                try:
-                    ed_mon = abs(float(request.form.get("ed_monto", 0) or 0))
-                    if ed_cta and ed_mon > 0:
-                        if ed_tipo in ("ENTRADA", "SALIDA"):
-                            sesion["movimientos"].append({
-                                "fecha": datetime.now().strftime("%Y-%m-%d"),
-                                "tipo": ed_tipo,
-                                "cuenta": ed_cta,
-                                "concepto": ed_con,
-                                "monto": ed_mon,
-                            })
-                        else:
-                            t_cx = "COBRAR" if ed_tipo == "COBRAR" else "PAGAR"
-                            sesion["cuentas_cx"].append({
-                                "tipo": t_cx,
-                                "tercero": ed_cta,
-                                "doc": ed_con,
-                                "monto": ed_mon,
-                                "estado": "PENDIENTE",
-                            })
-                        aviso = "Edición directa aplicada y estados recalculados."
-                    else:
-                        error = "Completa la cuenta y un monto mayor a cero."
-                except ValueError:
-                    error = "Monto inválido."
-            sesion["active_rama"] = "rama_directo"
-
         elif accion == "ordenar_movs":
             sesion["orden_campo"] = request.form.get("orden_campo") or "fecha"
             sesion["orden_dir"] = request.form.get("orden_dir") or "desc"
@@ -1252,21 +1201,18 @@ def index():
                 tipo = request.form.get("mov_tipo") or "ENTRADA"
                 cta = request.form.get("mov_cuenta") or "Banco Nacional"
                 desc = (request.form.get("mov_desc") or "").strip()
-                try:
-                    monto = abs(float(request.form.get("mov_monto", 0) or 0))
-                    if desc and monto > 0:
-                        sesion["movimientos"].append({
-                            "fecha": datetime.now().strftime("%Y-%m-%d"),
-                            "tipo": tipo,
-                            "cuenta": cta,
-                            "concepto": desc,
-                            "monto": monto,
-                        })
-                        aviso = "Movimiento registrado."
-                    else:
-                        error = "Indica concepto y monto válido."
-                except ValueError:
-                    error = "Monto inválido."
+                monto = abs(_f(request.form.get("mov_monto")))
+                if desc and monto > 0:
+                    sesion["movimientos"].append({
+                        "fecha": datetime.now().strftime("%Y-%m-%d"),
+                        "tipo": tipo,
+                        "cuenta": cta,
+                        "concepto": desc,
+                        "monto": monto,
+                    })
+                    aviso = "Movimiento registrado."
+                else:
+                    error = "Indica concepto y monto válido."
             sesion["active_rama"] = "rama_libros"
 
         elif accion == "agregar_asiento":
@@ -1275,61 +1221,52 @@ def index():
             else:
                 cta = (request.form.get("as_cuenta") or "").strip()
                 ref = (request.form.get("as_ref") or "").strip()
-                try:
-                    d = abs(float(request.form.get("as_debe", 0) or 0))
-                    h = abs(float(request.form.get("as_haber", 0) or 0))
-                    if cta and ref and (d > 0 or h > 0):
-                        sesion["asientos"].append({"cuenta": cta, "ref": ref, "debe": d, "haber": h})
-                        aviso = "Asiento registrado."
-                    else:
-                        error = "Completa cuenta, referencia y Debe o Haber."
-                except ValueError:
-                    error = "Valores inválidos."
+                d = abs(_f(request.form.get("as_debe")))
+                h = abs(_f(request.form.get("as_haber")))
+                if cta and ref and (d > 0 or h > 0):
+                    sesion["asientos"].append({"cuenta": cta, "ref": ref, "debe": d, "haber": h})
+                    aviso = "Asiento registrado."
+                else:
+                    error = "Completa cuenta, referencia y Debe o Haber."
             sesion["active_rama"] = "rama_libros"
 
         elif accion == "agregar_factura":
             lib = request.form.get("fac_libro") or "VENTA"
             rif = (request.form.get("fac_rif") or "").strip().upper()
             ctrl = (request.form.get("fac_control") or "S/N").strip()
-            try:
-                base = abs(float(request.form.get("fac_base", 0) or 0))
-                iva_p = abs(float(request.form.get("fac_iva_pct", 16) or 0))
-                riva_p = abs(float(request.form.get("fac_ret_iva_pct", 75) or 0))
-                rislr_p = abs(float(request.form.get("fac_ret_islr_pct", 0) or 0))
-                if rif and base > 0:
-                    iva_m = base * (iva_p / 100.0)
-                    riva_m = iva_m * (riva_p / 100.0)
-                    rislr_m = base * (rislr_p / 100.0)
-                    sesion["facturas"].append({
-                        "libro": lib,
-                        "rif": rif,
-                        "control": ctrl,
-                        "base": fmt_num(base),
-                        "iva": fmt_num(iva_m),
-                        "ret_iva": fmt_num(riva_m),
-                        "ret_islr": fmt_num(rislr_m),
-                        "total": fmt_num(base + iva_m),
-                    })
-                    aviso = f"Factura registrada en {lib}."
-                else:
-                    error = "Indica RIF y base mayor a cero."
-            except ValueError:
-                error = "Montos inválidos."
+            base = abs(_f(request.form.get("fac_base")))
+            iva_p = abs(_f(request.form.get("fac_iva_pct")))
+            riva_p = abs(_f(request.form.get("fac_ret_iva_pct")))
+            rislr_p = abs(_f(request.form.get("fac_ret_islr_pct")))
+            if rif and base > 0:
+                iva_m = base * (iva_p / 100.0)
+                riva_m = iva_m * (riva_p / 100.0)
+                rislr_m = base * (rislr_p / 100.0)
+                sesion["facturas"].append({
+                    "libro": lib,
+                    "rif": rif,
+                    "control": ctrl,
+                    "base": fmt_num(base),
+                    "iva": fmt_num(iva_m),
+                    "ret_iva": fmt_num(riva_m),
+                    "ret_islr": fmt_num(rislr_m),
+                    "total": fmt_num(base + iva_m),
+                })
+                aviso = f"Factura registrada en {lib}."
+            else:
+                error = "Indica RIF y base mayor a cero."
             sesion["active_rama"] = "rama_libros"
 
         elif accion == "agregar_cxc_cxp":
             t_cx = request.form.get("cx_tipo") or "COBRAR"
             ter = (request.form.get("cx_tercero") or "").strip()
             doc = (request.form.get("cx_doc") or "S/N").strip()
-            try:
-                mon = abs(float(request.form.get("cx_monto", 0) or 0))
-                if ter and mon > 0:
-                    sesion["cuentas_cx"].append({"tipo": t_cx, "tercero": ter, "doc": doc, "monto": mon, "estado": "PENDIENTE"})
-                    aviso = "Cuenta agregada."
-                else:
-                    error = "Completa tercero y monto."
-            except ValueError:
-                error = "Monto inválido."
+            mon = abs(_f(request.form.get("cx_monto")))
+            if ter and mon > 0:
+                sesion["cuentas_cx"].append({"tipo": t_cx, "tercero": ter, "doc": doc, "monto": mon, "estado": "PENDIENTE"})
+                aviso = "Cuenta agregada."
+            else:
+                error = "Completa tercero y monto."
             sesion["active_rama"] = "rama_libros"
 
         elif accion == "ejecutar_cierre":
@@ -1341,12 +1278,9 @@ def index():
             sesion["active_rama"] = "rama_libros"
 
         elif accion == "guardar_tasa_y_tono":
-            try:
-                t_v = abs(float(request.form.get("tasa_ref_inp", 45) or 45))
-                if t_v > 0:
-                    sesion["tasa_ref"] = t_v
-            except ValueError:
-                pass
+            t_v = abs(_f(request.form.get("tasa_ref_inp")))
+            if t_v > 0:
+                sesion["tasa_ref"] = t_v
             tono = (request.form.get("tono_fucsia") or "#ec4899").strip()
             if tono in ("#ec4899", "#f43f5e", "#d946ef"):
                 sesion["tono_fucsia"] = tono
