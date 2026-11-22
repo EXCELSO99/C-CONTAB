@@ -34,28 +34,28 @@ CUENTAS_VEN = [
 ]
 
 RENGLONES_CONTAB = [
-    {"id": "r01", "num": 1, "label": "1. Tomar Archivo (Manual)", "rama": "rama_auto_manual", "ico": "ico-doc"},
-    {"id": "r02", "num": 2, "label": "2. Qué Hacer con el Archivo", "rama": "rama_auto_manual", "ico": "ico-doc"},
-    {"id": "r03", "num": 3, "label": "3. Balance General VEN", "rama": "rama_auto_manual", "ico": "ico-chart"},
-    {"id": "r04", "num": 4, "label": "4. Estado Resultados VEN", "rama": "rama_auto_manual", "ico": "ico-chart"},
-    {"id": "r05", "num": 5, "label": "5. Activo Corriente", "rama": "rama_auto_manual", "ico": "ico-coin"},
-    {"id": "r06", "num": 6, "label": "6. Activo No Corriente", "rama": "rama_auto_manual", "ico": "ico-coin"},
-    {"id": "r07", "num": 7, "label": "7. Pasivo Corriente", "rama": "rama_auto_manual", "ico": "ico-doc"},
-    {"id": "r08", "num": 8, "label": "8. Pasivo No Corriente", "rama": "rama_auto_manual", "ico": "ico-doc"},
-    {"id": "r09", "num": 9, "label": "9. Patrimonio VEN", "rama": "rama_auto_manual", "ico": "ico-chart"},
-    {"id": "r10", "num": 10, "label": "10. Entradas y Salidas", "rama": "rama_libros", "ico": "ico-coin"},
-    {"id": "r11", "num": 11, "label": "11. Libro Diario", "rama": "rama_libros", "ico": "ico-book"},
-    {"id": "r12", "num": 12, "label": "12. Libro Mayor", "rama": "rama_libros", "ico": "ico-book"},
-    {"id": "r13", "num": 13, "label": "13. Libro de Ventas IVA", "rama": "rama_libros", "ico": "ico-doc"},
-    {"id": "r14", "num": 14, "label": "14. Libro de Compras IVA", "rama": "rama_libros", "ico": "ico-doc"},
-    {"id": "r15", "num": 15, "label": "15. Retenciones IVA / ISLR", "rama": "rama_libros", "ico": "ico-coin"},
-    {"id": "r16", "num": 16, "label": "16. Cuentas por Cobrar", "rama": "rama_libros", "ico": "ico-doc"},
-    {"id": "r17", "num": 17, "label": "17. Cuentas por Pagar", "rama": "rama_libros", "ico": "ico-doc"},
-    {"id": "r18", "num": 18, "label": "18. Cierre del Período", "rama": "rama_libros", "ico": "ico-book"},
-    {"id": "r19", "num": 19, "label": "19. Ordenar y Exportar CSV", "rama": "rama_auto_manual", "ico": "ico-doc"},
-    {"id": "r20", "num": 20, "label": "20. Actualizaciones VEN", "rama": "rama_aprender", "ico": "ico-grad"},
-    {"id": "r21", "num": 21, "label": "21. Cursos e Informes", "rama": "rama_aprender", "ico": "ico-grad"},
-    {"id": "r22", "num": 22, "label": "22. Precios Actuales", "rama": "rama_aprender", "ico": "ico-coin"},
+    {"id": "r01", "num": 1, "label": "Seleccionar y Ejecutar Archivo", "rama": "rama_directo", "ico": "ico-doc"},
+    {"id": "r02", "num": 2, "label": "Destino del Archivo (BG / ER)", "rama": "rama_directo", "ico": "ico-doc"},
+    {"id": "r03", "num": 3, "label": "Balance General VEN", "rama": "rama_directo", "ico": "ico-chart"},
+    {"id": "r04", "num": 4, "label": "Estado Resultados VEN", "rama": "rama_directo", "ico": "ico-chart"},
+    {"id": "r05", "num": 5, "label": "Activo Corriente", "rama": "rama_directo", "ico": "ico-coin"},
+    {"id": "r06", "num": 6, "label": "Activo No Corriente", "rama": "rama_directo", "ico": "ico-coin"},
+    {"id": "r07", "num": 7, "label": "Pasivo Corriente", "rama": "rama_directo", "ico": "ico-doc"},
+    {"id": "r08", "num": 8, "label": "Pasivo No Corriente", "rama": "rama_directo", "ico": "ico-doc"},
+    {"id": "r09", "num": 9, "label": "Patrimonio VEN", "rama": "rama_directo", "ico": "ico-chart"},
+    {"id": "r10", "num": 10, "label": "Entradas y Salidas", "rama": "rama_libros", "ico": "ico-coin"},
+    {"id": "r11", "num": 11, "label": "Libro Diario", "rama": "rama_libros", "ico": "ico-book"},
+    {"id": "r12", "num": 12, "label": "Libro Mayor", "rama": "rama_libros", "ico": "ico-book"},
+    {"id": "r13", "num": 13, "label": "Libro de Ventas IVA", "rama": "rama_libros", "ico": "ico-doc"},
+    {"id": "r14", "num": 14, "label": "Libro de Compras IVA", "rama": "rama_libros", "ico": "ico-doc"},
+    {"id": "r15", "num": 15, "label": "Retenciones IVA / ISLR", "rama": "rama_libros", "ico": "ico-coin"},
+    {"id": "r16", "num": 16, "label": "Cuentas por Cobrar", "rama": "rama_libros", "ico": "ico-doc"},
+    {"id": "r17", "num": 17, "label": "Cuentas por Pagar", "rama": "rama_libros", "ico": "ico-doc"},
+    {"id": "r18", "num": 18, "label": "Cierre del Período", "rama": "rama_libros", "ico": "ico-book"},
+    {"id": "r19", "num": 19, "label": "Ordenar y Exportar CSV", "rama": "rama_directo", "ico": "ico-doc"},
+    {"id": "r20", "num": 20, "label": "Actualizaciones VEN", "rama": "rama_aprender", "ico": "ico-grad"},
+    {"id": "r21", "num": 21, "label": "Cursos e Informes", "rama": "rama_aprender", "ico": "ico-grad"},
+    {"id": "r22", "num": 22, "label": "Precios Actuales", "rama": "rama_aprender", "ico": "ico-coin"},
 ]
 
 CURSOS_Y_ACTUALIZACIONES = [
@@ -89,13 +89,13 @@ HTML_CONTAB = """<!DOCTYPE html>
   <title>C-CONTAB // Totalmente Contable · Venezuela</title>
   <style>
     :root {
-      --bg-dark: #050914;
-      --bg-navy: #0a1226;
-      --panel: #0e1a36;
-      --panel-2: #14244a;
-      --border: #253b6e;
+      --bg-dark: #040711;
+      --bg-navy: #091124;
+      --panel: #0d1934;
+      --panel-2: #132347;
+      --border: #283f75;
       --text: #f8fafc;
-      --muted: #a4b8de;
+      --muted: #a6bae0;
       --fucsia: {{ tono_fucsia }};
       --fucsia-2: #db2777;
       --fucsia-soft: rgba(236, 72, 153, 0.16);
@@ -104,77 +104,91 @@ HTML_CONTAB = """<!DOCTYPE html>
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
       background:
-        radial-gradient(circle at 88% 8%, rgba(236, 72, 153, 0.20), transparent 36%),
-        radial-gradient(circle at 12% 12%, #152d63 0%, var(--bg-dark) 62%);
+        radial-gradient(circle at 90% 6%, rgba(236, 72, 153, 0.22), transparent 38%),
+        radial-gradient(circle at 10% 14%, #162e66 0%, var(--bg-dark) 65%);
       color: var(--text);
       min-height: 100vh;
+      font-size: 15px;
     }
     .corner-tag {
       position: fixed;
-      top: 10px;
-      right: 12px;
+      top: 14px;
+      right: 16px;
       z-index: 60;
-      background: rgba(14, 26, 54, 0.94);
-      border: 1px solid var(--fucsia);
+      background: rgba(13, 25, 52, 0.96);
+      border: 1.5px solid var(--fucsia);
       color: #f9a8d4;
-      padding: 5px 11px;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      box-shadow: 0 0 16px rgba(236, 72, 153, 0.25);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      box-shadow: 0 0 20px rgba(236, 72, 153, 0.28);
     }
-    .wrap { max-width: 1360px; margin: 0 auto; padding: 38px 14px 64px; }
+    .wrap { max-width: 1480px; margin: 0 auto; padding: 52px 24px 80px; }
     .login-box {
-      max-width: 430px;
-      margin: 56px auto;
+      max-width: 460px;
+      margin: 68px auto;
       background: linear-gradient(165deg, var(--panel) 0%, var(--bg-navy) 100%);
-      border: 1px solid var(--fucsia);
-      box-shadow: 0 0 40px rgba(236, 72, 153, 0.25);
-      border-radius: 20px;
-      padding: 28px 24px;
+      border: 1.5px solid var(--fucsia);
+      box-shadow: 0 0 46px rgba(236, 72, 153, 0.24);
+      border-radius: 12px;
+      padding: 36px 30px;
       text-align: center;
     }
-    .brand-title { margin: 0; font-size: 2.1rem; letter-spacing: 0.08em; }
+    .brand-title { margin: 0; font-size: 2.35rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; }
     .brand-title span { color: var(--fucsia); }
-    .brand-sub { margin: 6px 0 18px; font-size: 0.78rem; color: var(--muted); letter-spacing: 0.14em; }
+    .brand-sub { margin: 8px 0 24px; font-size: 0.8rem; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; }
 
-    label { display: block; text-align: left; font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
+    label {
+      display: block;
+      text-align: left;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 7px;
+      letter-spacing: 0.03em;
+    }
     input, select, textarea {
       width: 100%;
       background: var(--bg-dark);
       color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 8px 10px;
-      font-size: 0.88rem;
-      margin-bottom: 9px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 0.94rem;
+      margin-bottom: 16px;
     }
     input:focus, select:focus, textarea:focus { outline: none; border-color: var(--fucsia); }
 
     button {
       cursor: pointer;
       border: none;
-      border-radius: 10px;
-      padding: 9px 13px;
-      font-weight: 600;
-      font-size: 0.83rem;
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
     }
     .btn-fucsia {
       width: 100%;
       background: linear-gradient(90deg, var(--fucsia-2), var(--fucsia));
       color: #fff;
-      padding: 10px 14px;
+      padding: 13px 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
     }
     .btn-navy {
       background: var(--panel-2);
       color: var(--text);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      gap: 8px;
     }
     .btn-navy:hover { border-color: var(--fucsia); }
 
@@ -183,18 +197,19 @@ HTML_CONTAB = """<!DOCTYPE html>
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      gap: 14px;
       background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 11px 16px;
-      margin-bottom: 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 22px;
+      margin-bottom: 20px;
     }
     .pill {
       display: inline-block;
-      padding: 3px 9px;
-      border-radius: 999px;
-      font-size: 0.73rem;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
       background: var(--fucsia-soft);
       color: #f9a8d4;
       border: 1px solid rgba(236, 72, 153, 0.45);
@@ -202,69 +217,70 @@ HTML_CONTAB = """<!DOCTYPE html>
 
     .ramas-bar {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 10px;
-      margin-bottom: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 22px;
     }
     .rama-btn {
       background: var(--panel);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       color: var(--text);
-      padding: 12px 14px;
-      border-radius: 14px;
+      padding: 18px 20px;
+      border-radius: 10px;
       text-align: left;
     }
     .rama-btn.active {
-      background: linear-gradient(135deg, rgba(219,39,119,0.28), rgba(15,27,56,0.95));
+      background: linear-gradient(135deg, rgba(219,39,119,0.26), rgba(13,25,52,0.98));
       border-color: var(--fucsia);
-      box-shadow: 0 0 22px rgba(236, 72, 153, 0.2);
+      box-shadow: 0 0 24px rgba(236, 72, 153, 0.22);
     }
-    .rama-title { font-size: 0.94rem; font-weight: 700; display: block; }
-    .rama-desc { font-size: 0.75rem; color: var(--muted); display: block; margin-top: 2px; }
+    .rama-title { font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; display: block; }
+    .rama-desc { font-size: 0.82rem; color: var(--muted); display: block; margin-top: 5px; line-height: 1.4; }
 
     .app-layout {
       display: grid;
-      grid-template-columns: 275px 1fr;
-      gap: 14px;
+      grid-template-columns: 320px 1fr;
+      gap: 22px;
       align-items: start;
     }
-    @media (max-width: 920px) {
+    @media (max-width: 980px) {
       .app-layout { grid-template-columns: 1fr; }
     }
 
     .fila-menu {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 10px;
       background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 10px;
-      max-height: 80vh;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      max-height: 82vh;
       overflow-y: auto;
     }
     .renglon-item {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 12px;
       width: 100%;
       background: var(--panel-2);
-      border: 1px solid transparent;
+      border: 1.5px solid transparent;
       color: var(--text);
-      padding: 7px 9px;
-      border-radius: 10px;
+      padding: 11px 12px;
+      border-radius: 8px;
       text-align: left;
-      font-size: 0.78rem;
+      font-size: 0.84rem;
+      font-weight: 600;
     }
     .renglon-item:hover, .renglon-item.active {
       border-color: var(--fucsia);
       background: var(--fucsia-soft);
     }
     .thumb-box {
-      width: 34px;
-      height: 34px;
-      min-width: 34px;
-      border-radius: 8px;
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      border-radius: 7px;
       background: var(--bg-dark);
       border: 1px solid var(--border);
       display: flex;
@@ -274,79 +290,88 @@ HTML_CONTAB = """<!DOCTYPE html>
 
     .main-stage {
       background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
     }
     .hidden { display: none !important; }
 
-    .split-auto-manual {
+    .split-directo {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
-      gap: 14px;
-      margin-bottom: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 22px;
+      margin-bottom: 24px;
     }
     .card {
       background: var(--panel-2);
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      padding: 14px;
-      margin-bottom: 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 22px;
+      margin-bottom: 20px;
     }
-    .card-auto { border-top: 3px solid var(--fucsia); }
-    .card-manual { border-top: 3px solid #f472b6; }
-    .card-learn { border-left: 3px solid var(--fucsia); }
+    .card-bg { border-top: 3px solid var(--fucsia); }
+    .card-file { border-top: 3px solid #f472b6; }
+    .card-learn { border-left: 4px solid var(--fucsia); }
 
-    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
 
     .kpi-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 9px;
-      margin: 10px 0 14px;
+      grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+      gap: 14px;
+      margin: 14px 0 20px;
     }
     .kpi {
       background: var(--bg-dark);
       border: 1px solid var(--border);
       border-left: 3px solid var(--fucsia);
-      border-radius: 10px;
-      padding: 9px 11px;
+      border-radius: 8px;
+      padding: 13px 14px;
     }
-    .kpi-lbl { font-size: 0.71rem; color: var(--muted); }
-    .kpi-val { font-size: 1.04rem; font-weight: 700; margin-top: 2px; }
+    .kpi-lbl { font-size: 0.76rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .kpi-val { font-size: 1.15rem; font-weight: 800; margin-top: 4px; }
 
     .table-wrap {
       overflow-x: auto;
-      max-height: 340px;
+      max-height: 360px;
       overflow-y: auto;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      margin-bottom: 12px;
+      border-radius: 8px;
+      margin-bottom: 18px;
     }
-    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-    th, td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; }
-    th { background: var(--panel-2); position: sticky; top: 0; z-index: 2; color: #f9a8d4; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+    th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: left; }
+    th { background: var(--panel); position: sticky; top: 0; z-index: 2; color: #f9a8d4; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.05em; }
 
     .alert-err {
       background: rgba(239, 68, 68, 0.16);
-      border: 1px solid #ef4444;
+      border: 1.5px solid #ef4444;
       color: #fecaca;
-      padding: 9px 12px;
-      border-radius: 10px;
-      margin-bottom: 12px;
-      font-size: 0.84rem;
+      padding: 13px 16px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 0.9rem;
     }
     .alert-ok {
       background: rgba(16, 185, 129, 0.15);
-      border: 1px solid var(--ok);
+      border: 1.5px solid var(--ok);
       color: #a7f3d0;
-      padding: 9px 12px;
-      border-radius: 10px;
-      margin-bottom: 12px;
-      font-size: 0.84rem;
+      padding: 13px 16px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 0.9rem;
     }
-    .curso-stream { display: flex; flex-direction: column; gap: 12px; }
+    .curso-stream { display: flex; flex-direction: column; gap: 16px; }
+    .renglon-banner {
+      background: var(--fucsia-soft);
+      border: 1px solid var(--fucsia);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 18px;
+      font-size: 0.88rem;
+      color: #fbcfe8;
+    }
     a { color: #f472b6; text-decoration: none; }
     a:hover { text-decoration: underline; }
   </style>
@@ -384,8 +409,8 @@ HTML_CONTAB = """<!DOCTYPE html>
 <div class="wrap">
   {% if not autorizado %}
     <div class="login-box">
-      <div class="thumb-box" style="width:54px;height:54px;margin:0 auto 10px;border-radius:14px;">
-        <svg viewBox="0 0 24 24" width="32" height="32"><use href="#ico-chart"/></svg>
+      <div class="thumb-box" style="width:58px;height:58px;margin:0 auto 14px;border-radius:10px;">
+        <svg viewBox="0 0 24 24" width="34" height="34"><use href="#ico-chart"/></svg>
       </div>
       <h1 class="brand-title">C-<span>CONTAB</span></h1>
       <p class="brand-sub">CONTABILIDAD VENEZUELA // ACCESO</p>
@@ -393,13 +418,13 @@ HTML_CONTAB = """<!DOCTYPE html>
       <form method="POST">
         <label for="codigo">Clave / Código de acceso</label>
         <input id="codigo" name="codigo" type="text" placeholder="DEMO2026, VIP100 o CONTAB2026" required />
-        <button class="btn-fucsia" type="submit">ENTRAR A C-CONTAB</button>
+        <button class="btn-fucsia" type="submit">Entrar a C-CONTAB</button>
       </form>
     </div>
   {% else %}
     <div class="topbar">
       <div>
-        <strong>C-<span style="color:var(--fucsia)">CONTAB</span></strong>
+        <strong style="font-size:1.15rem;letter-spacing:0.08em;">C-<span style="color:var(--fucsia)">CONTAB</span></strong>
         <span class="pill">{{ codigo }} · {{ plan }}</span>
         {% if estado_cierre == 'CERRADO' %}
           <span class="pill" style="background:rgba(16,185,129,0.16);color:#6ee7b7;border-color:#10b981;">PERÍODO CERRADO</span>
@@ -407,10 +432,10 @@ HTML_CONTAB = """<!DOCTYPE html>
           <span class="pill">PERÍODO ABIERTO</span>
         {% endif %}
       </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
         <span class="pill">Tasa: {{ tasa_ref }} Bs</span>
         <span class="pill">Uso: {{ uso }} / {{ limite }}</span>
-        <a class="btn-navy" style="padding:7px 11px;border-radius:10px;" href="/">Salir</a>
+        <a class="btn-navy" style="padding:8px 14px;border-radius:8px;" href="/">Salir</a>
       </div>
     </div>
 
@@ -418,13 +443,13 @@ HTML_CONTAB = """<!DOCTYPE html>
     {% if aviso %}<div class="alert-ok">{{ aviso }}</div>{% endif %}
 
     <div class="ramas-bar">
-      <button type="button" class="rama-btn {% if active_rama == 'rama_auto_manual' %}active{% endif %}" onclick="openRama('rama_auto_manual', this)">
-        <span class="rama-title">Rama 1 · Automática &amp; Manual</span>
-        <span class="rama-desc">Estados VEN completos a la izquierda + Flujo manual por pasos a la derecha</span>
+      <button type="button" class="rama-btn {% if active_rama == 'rama_directo' %}active{% endif %}" onclick="openRama('rama_directo', this)">
+        <span class="rama-title">Rama 1 · Flujo Directo &amp; Estados VEN</span>
+        <span class="rama-desc">Balance General y Estado de Resultados editables + Seleccionar y Ejecutar Archivo</span>
       </button>
       <button type="button" class="rama-btn {% if active_rama == 'rama_libros' %}active{% endif %}" onclick="openRama('rama_libros', this)">
         <span class="rama-title">Rama 2 · Libros, Tributos y Cierre</span>
-        <span class="rama-desc">Diario, Mayor, Ventas/Compras IVA/ISLR, CxC/CxP, Cierre y Estilo</span>
+        <span class="rama-desc">Entradas/Salidas, Libro Diario, Mayor, Ventas/Compras IVA/ISLR, CxC/CxP y Cierre</span>
       </button>
       <button type="button" class="rama-btn {% if active_rama == 'rama_aprender' %}active{% endif %}" onclick="openRama('rama_aprender', this)">
         <span class="rama-title">Rama 3 · Actualizaciones y Cursos</span>
@@ -435,7 +460,7 @@ HTML_CONTAB = """<!DOCTYPE html>
     <div class="app-layout">
       <aside class="fila-menu" aria-label="Menú vertical por renglones">
         {% for item in renglones_menu %}
-          <button type="button" class="renglon-item {% if active_renglon == item.id %}active{% endif %}" onclick="openRenglon('{{ item.id }}', '{{ item.rama }}', this)">
+          <button type="button" class="renglon-item {% if active_renglon == item.id %}active{% endif %}" onclick="openRenglon('{{ item.id }}', '{{ item.label }}', '{{ item.rama }}', this)">
             <span class="thumb-box">
               <svg viewBox="0 0 24 24" width="20" height="20"><use href="#{{ item.ico }}"/></svg>
             </span>
@@ -445,10 +470,15 @@ HTML_CONTAB = """<!DOCTYPE html>
       </aside>
 
       <main class="main-stage">
-        <div id="rama_auto_manual" class="rama-sec {% if active_rama != 'rama_auto_manual' %}hidden{% endif %}">
-          <div class="split-auto-manual">
-            <div class="card card-auto">
-              <h2 style="margin-top:0;color:#f9a8d4;">Parte Automática · Estados Venezuela</h2>
+        <div id="renglon_banner" class="renglon-banner">
+          Renglón activo: <strong id="renglon_activo_txt">{{ active_renglon_label }}</strong> · Selecciona un archivo en cualquier momento y ejecútalo directo hacia tus estados o libros.
+        </div>
+
+        <!-- RAMA 1: FLUJO DIRECTO (ESTADOS VEN EDITABLES + SELECCIONAR Y EJECUTAR ARCHIVO) -->
+        <div id="rama_directo" class="rama-sec {% if active_rama != 'rama_directo' %}hidden{% endif %}">
+          <div class="split-directo">
+            <div class="card card-bg">
+              <h2 style="margin-top:0;color:#f9a8d4;text-transform:uppercase;letter-spacing:0.05em;">Estados Financieros · Venezuela</h2>
               <div class="kpi-row">
                 <div class="kpi"><div class="kpi-lbl">Activo Total</div><div class="kpi-val" style="color:var(--ok)">{{ bg.activo_total }}</div></div>
                 <div class="kpi"><div class="kpi-lbl">Pasivo Total</div><div class="kpi-val" style="color:#f472b6">{{ bg.pasivo_total }}</div></div>
@@ -456,7 +486,7 @@ HTML_CONTAB = """<!DOCTYPE html>
                 <div class="kpi"><div class="kpi-lbl">Utilidad / Pérdida Neta</div><div class="kpi-val" style="color:var(--ok)">{{ er.utilidad_neta }}</div></div>
               </div>
 
-              <h3 style="color:#f9a8d4;margin-bottom:6px;">Estado de Resultados Completo (Venezuela)</h3>
+              <h3 style="color:#f9a8d4;margin:18px 0 10px;">Estado de Resultados Completo (Venezuela)</h3>
               <div class="table-wrap">
                 <table>
                   <thead><tr><th>Renglón del Estado de Resultados</th><th>Monto</th></tr></thead>
@@ -473,7 +503,7 @@ HTML_CONTAB = """<!DOCTYPE html>
                 </table>
               </div>
 
-              <h3 style="color:#f9a8d4;margin-bottom:6px;">Balance General Completo (Venezuela)</h3>
+              <h3 style="color:#f9a8d4;margin:18px 0 10px;">Balance General Completo (Venezuela)</h3>
               <div class="table-wrap">
                 <table>
                   <thead><tr><th>Sección del Balance General</th><th>Monto</th></tr></thead>
@@ -497,35 +527,39 @@ HTML_CONTAB = """<!DOCTYPE html>
               </div>
             </div>
 
-            <div class="card card-manual">
-              <h2 style="margin-top:0;color:#f9a8d4;">Parte Manual · Paso 1 y Paso 2</h2>
+            <div class="card card-file">
+              <h2 style="margin-top:0;color:#f9a8d4;text-transform:uppercase;letter-spacing:0.05em;">Seleccionar y Ejecutar Archivo</h2>
+              <p style="color:var(--muted);font-size:0.88rem;line-height:1.5;margin-bottom:18px;">
+                Selecciona un archivo o pega las líneas y ejecútalo directo al Balance General, Estado de Resultados o libros.
+              </p>
+
               <form method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="codigo" value="{{ codigo }}" />
-                <input type="hidden" name="active_rama" value="rama_auto_manual" />
-                <input type="hidden" name="accion" value="procesar_archivo_manual" />
+                <input type="hidden" name="active_rama" value="rama_directo" />
+                <input type="hidden" name="accion" value="ejecutar_archivo_directo" />
 
-                <label for="man_archivo"><strong>1. Tomar archivo</strong> (.csv, .txt, .json)</label>
-                <input id="man_archivo" name="man_archivo" type="file" accept=".csv,.txt,.json" />
+                <label for="dir_archivo">Seleccionar un archivo (.csv, .txt, .json)</label>
+                <input id="dir_archivo" name="dir_archivo" type="file" accept=".csv,.txt,.json" />
 
-                <label for="man_texto">O pegar líneas (Fecha, Tipo, Cuenta, Concepto, Monto)</label>
-                <textarea id="man_texto" name="man_texto" rows="4" placeholder="2026-11-22, ENTRADA, Banco Nacional, Cobro cliente, 800"></textarea>
+                <label for="dir_texto">O pegar líneas (Fecha, Tipo, Cuenta, Concepto, Monto)</label>
+                <textarea id="dir_texto" name="dir_texto" rows="5" placeholder="2026-11-22, ENTRADA, Banco Nacional, Ingreso directo, 1200"></textarea>
 
-                <label for="man_destino"><strong>2. ¿Qué quieres hacer con este archivo?</strong></label>
-                <select id="man_destino" name="man_destino">
-                  <option value="movimientos">Enviar a Entradas y Salidas (y recalcular Estados)</option>
-                  <option value="diario">Enviar a Libro Diario (Debe / Haber)</option>
-                  <option value="ventas">Registrar como Facturas en Libro de Ventas</option>
-                  <option value="compras">Registrar como Facturas en Libro de Compras</option>
-                  <option value="cxc">Registrar como Cuentas por Cobrar</option>
-                  <option value="cxp">Registrar como Cuentas por Pagar</option>
+                <label for="dir_destino">¿Dónde meter esta información al ejecutar?</label>
+                <select id="dir_destino" name="dir_destino">
+                  <option value="balance_general">Balance General y Estado de Resultados (Directo)</option>
+                  <option value="diario">Libro Diario (Debe / Haber)</option>
+                  <option value="ventas">Libro de Ventas IVA</option>
+                  <option value="compras">Libro de Compras IVA</option>
+                  <option value="cxc">Cuentas por Cobrar</option>
+                  <option value="cxp">Cuentas por Pagar</option>
                 </select>
 
-                <button type="submit" class="btn-fucsia">Ejecutar acción con el archivo</button>
+                <button type="submit" class="btn-fucsia">Ejecutar archivo</button>
               </form>
 
-              <form method="POST" style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px;">
+              <form method="POST" style="margin-top:22px;border-top:1px solid var(--border);padding-top:18px;">
                 <input type="hidden" name="codigo" value="{{ codigo }}" />
-                <input type="hidden" name="active_rama" value="rama_auto_manual" />
+                <input type="hidden" name="active_rama" value="rama_directo" />
                 <input type="hidden" name="accion" value="ordenar_movs" />
                 <div class="grid-2">
                   <div>
@@ -545,12 +579,47 @@ HTML_CONTAB = """<!DOCTYPE html>
                     </select>
                   </div>
                 </div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;">
                   <button type="submit" class="btn-navy" style="flex:1;">Ordenar registros</button>
-                  <a class="btn-navy" style="padding:9px 12px;border-radius:10px;" href="/descargar-contable?codigo={{ codigo }}">Exportar CSV</a>
+                  <a class="btn-navy" style="padding:12px 16px;border-radius:8px;" href="/descargar-contable?codigo={{ codigo }}">Exportar CSV</a>
                 </div>
               </form>
             </div>
+          </div>
+
+          <!-- EDICION DIRECTA DE PARTIDAS Y MOVIMIENTOS -->
+          <div class="card">
+            <h3 style="margin-top:0;color:#f9a8d4;">Edición directa de valores (Balance General / Resultados / Cuentas)</h3>
+            <form method="POST" class="grid-2" style="align-items:end;">
+              <input type="hidden" name="codigo" value="{{ codigo }}" />
+              <input type="hidden" name="active_rama" value="rama_directo" />
+              <input type="hidden" name="accion" value="editar_partida_directa" />
+
+              <div>
+                <label for="ed_tipo">Tipo de registro a editar</label>
+                <select id="ed_tipo" name="ed_tipo">
+                  <option value="ENTRADA">ENTRADA (Ingreso / Aporte / Cobro)</option>
+                  <option value="SALIDA">SALIDA (Costo / Gasto / Pago)</option>
+                  <option value="COBRAR">Cuenta por Cobrar (Cliente)</option>
+                  <option value="PAGAR">Cuenta por Pagar (Proveedor)</option>
+                </select>
+              </div>
+              <div>
+                <label for="ed_cta">Cuenta o Nombre</label>
+                <input id="ed_cta" name="ed_cuenta" type="text" placeholder="Ej: Banco Nacional, Capital Social, Ventas" required />
+              </div>
+              <div>
+                <label for="ed_con">Concepto o Documento</label>
+                <input id="ed_con" name="ed_concepto" type="text" placeholder="Ej: Ajuste directo o Factura" required />
+              </div>
+              <div>
+                <label for="ed_mon">Monto</label>
+                <input id="ed_mon" name="ed_monto" type="number" step="any" required />
+              </div>
+              <div style="grid-column:1/-1;">
+                <button type="submit" class="btn-fucsia">Aplicar edición directa</button>
+              </div>
+            </form>
           </div>
 
           <div class="card">
@@ -577,8 +646,9 @@ HTML_CONTAB = """<!DOCTYPE html>
           </div>
         </div>
 
+        <!-- RAMA 2: LIBROS, TRIBUTOS, CXC/CXP, CIERRE Y ESTILO -->
         <div id="rama_libros" class="rama-sec {% if active_rama != 'rama_libros' %}hidden{% endif %}">
-          <h2 style="margin-top:0;color:#f9a8d4;">Rama 2 · Libros, Tributos, Cuentas y Cierre</h2>
+          <h2 style="margin-top:0;color:#f9a8d4;text-transform:uppercase;letter-spacing:0.05em;">Libros, Tributos, Cuentas y Cierre</h2>
 
           <div class="grid-2">
             <form method="POST" class="card">
@@ -728,19 +798,20 @@ HTML_CONTAB = """<!DOCTYPE html>
           </div>
         </div>
 
+        <!-- RAMA 3: ACTUALIZACIONES, CURSOS DE LECTURA VERTICAL Y PRECIOS ACTUALES -->
         <div id="rama_aprender" class="rama-sec {% if active_rama != 'rama_aprender' %}hidden{% endif %}">
-          <h2 style="margin-top:0;color:#f9a8d4;">Rama 3 · Actualizaciones, Cursos y Precios Actuales</h2>
+          <h2 style="margin-top:0;color:#f9a8d4;text-transform:uppercase;letter-spacing:0.05em;">Actualizaciones, Cursos y Precios Actuales</h2>
 
           <div class="curso-stream">
             {% for modulo in cursos_y_actualizaciones %}
               <article class="card card-learn">
                 <h3 style="margin-top:0;color:#f9a8d4;">{{ modulo.titulo }}</h3>
-                <p style="margin:0;color:var(--text);font-size:0.86rem;line-height:1.55;">{{ modulo.detalle }}</p>
+                <p style="margin:0;color:var(--text);font-size:0.9rem;line-height:1.6;">{{ modulo.detalle }}</p>
               </article>
             {% endfor %}
           </div>
 
-          <div class="card" style="margin-top:14px;">
+          <div class="card" style="margin-top:20px;">
             <h3 style="margin-top:0;color:#f9a8d4;">Precios y Referencias Actuales</h3>
             <div class="table-wrap">
               <table>
@@ -790,13 +861,15 @@ HTML_CONTAB = """<!DOCTYPE html>
     document.querySelectorAll('input[name="active_rama"]').forEach(i => i.value = ramaId);
   }
 
-  function openRenglon(renglonId, ramaId, btn) {
+  function openRenglon(renglonId, renglonLabel, ramaId, btn) {
     document.querySelectorAll('.renglon-item').forEach(r => r.classList.remove('active'));
     if (btn) btn.classList.add('active');
     document.querySelectorAll('.rama-sec').forEach(s => s.classList.add('hidden'));
     const sec = document.getElementById(ramaId);
     if (sec) sec.classList.remove('hidden');
     document.querySelectorAll('input[name="active_rama"]').forEach(i => i.value = ramaId);
+    const bannerTxt = document.getElementById('renglon_activo_txt');
+    if (bannerTxt) bannerTxt.textContent = renglonLabel;
     if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 </script>
@@ -950,7 +1023,7 @@ def parsear_lineas_contables(texto):
         tipo_raw = (partes[1] if len(partes) > 1 else "ENTRADA").upper()
         tipo = "SALIDA" if "SAL" in tipo_raw or "EGR" in tipo_raw else "ENTRADA"
         cuenta = partes[2] if len(partes) > 2 and partes[2] else "Banco Nacional"
-        concepto = partes[3] if len(partes) > 3 and partes[3] else "Movimiento manual"
+        concepto = partes[3] if len(partes) > 3 and partes[3] else "Movimiento directo"
         try:
             monto = abs(float(partes[4])) if len(partes) > 4 else 0.0
         except ValueError:
@@ -972,8 +1045,9 @@ def obtener_sesion(codigo):
     if code not in SESIONES_CONTAB:
         SESIONES_CONTAB[code] = {
             "uso": 0,
-            "active_rama": "rama_auto_manual",
+            "active_rama": "rama_directo",
             "active_renglon": "r01",
+            "active_renglon_label": "Seleccionar y Ejecutar Archivo",
             "tono_fucsia": "#ec4899",
             "estado_cierre": "ABIERTO",
             "cierre_obs": "Período listo para operación y cierre",
@@ -1018,8 +1092,9 @@ def render_contab(codigo, sesion, error_msg=None, aviso_msg=None):
         plan=info["plan"],
         limite=info["limite"],
         uso=sesion["uso"],
-        active_rama=sesion.get("active_rama", "rama_auto_manual"),
+        active_rama=sesion.get("active_rama", "rama_directo"),
         active_renglon=sesion.get("active_renglon", "r01"),
+        active_renglon_label=sesion.get("active_renglon_label", "Seleccionar y Ejecutar Archivo"),
         tono_fucsia=sesion.get("tono_fucsia", "#ec4899"),
         estado_cierre=sesion.get("estado_cierre", "ABIERTO"),
         cierre_obs=sesion.get("cierre_obs", ""),
@@ -1051,7 +1126,7 @@ def index():
             )
 
         rama_sel = request.form.get("active_rama")
-        if rama_sel in ("rama_auto_manual", "rama_libros", "rama_aprender"):
+        if rama_sel in ("rama_directo", "rama_libros", "rama_aprender"):
             sesion["active_rama"] = rama_sel
 
         limite = CODIGOS_ACCESO[codigo]["limite"]
@@ -1064,12 +1139,12 @@ def index():
                 return render_contab(codigo, sesion, error_msg="Límite de uso alcanzado.")
             sesion["uso"] += 1
 
-        if accion == "procesar_archivo_manual":
+        if accion == "ejecutar_archivo_directo":
             if sesion["estado_cierre"] == "CERRADO":
                 error = "El período está CERRADO. Reábrelo para cargar datos."
             else:
                 filas = []
-                arch = request.files.get("man_archivo")
+                arch = request.files.get("dir_archivo")
                 if arch and arch.filename:
                     raw = arch.read().decode("utf-8", errors="ignore").strip()
                     if arch.filename.lower().endswith(".json") or raw.startswith("["):
@@ -1086,22 +1161,22 @@ def index():
                                     })
                     else:
                         filas.extend(parsear_lineas_contables(raw))
-                pegar = request.form.get("man_texto") or ""
+                pegar = request.form.get("dir_texto") or ""
                 if pegar.strip():
                     filas.extend(parsear_lineas_contables(pegar))
 
-                destino = request.form.get("man_destino") or "movimientos"
+                destino = request.form.get("dir_destino") or "balance_general"
                 if not filas:
-                    error = "No se encontraron filas válidas."
-                elif destino == "movimientos":
+                    error = "No se encontraron filas válidas en el archivo o texto."
+                elif destino == "balance_general":
                     sesion["movimientos"].extend(filas)
-                    aviso = f"Se enviaron {len(filas)} fila(s) a Entradas/Salidas."
+                    aviso = f"Archivo ejecutado: {len(filas)} fila(s) incorporadas al Balance General y Estado de Resultados."
                 elif destino == "diario":
                     for f in filas:
                         d = f["monto"] if f["tipo"] == "ENTRADA" else 0.0
                         h = f["monto"] if f["tipo"] == "SALIDA" else 0.0
                         sesion["asientos"].append({"cuenta": f["cuenta"], "ref": f["concepto"], "debe": d, "haber": h})
-                    aviso = f"Se registraron {len(filas)} asiento(s) en el Libro Diario."
+                    aviso = f"Archivo ejecutado: {len(filas)} asiento(s) registrados en el Libro Diario."
                 elif destino in ("ventas", "compras"):
                     lib = "VENTA" if destino == "ventas" else "COMPRA"
                     for f in filas:
@@ -1116,7 +1191,7 @@ def index():
                             "ret_islr": "0",
                             "total": fmt_num(f["monto"] + iva_m),
                         })
-                    aviso = f"Se cargaron {len(filas)} factura(s) en {lib}."
+                    aviso = f"Archivo ejecutado: {len(filas)} factura(s) cargadas en {lib}."
                 elif destino in ("cxc", "cxp"):
                     t_cx = "COBRAR" if destino == "cxc" else "PAGAR"
                     for f in filas:
@@ -1127,14 +1202,48 @@ def index():
                             "monto": f["monto"],
                             "estado": "PENDIENTE",
                         })
-                    aviso = f"Se agregaron {len(filas)} cuenta(s) por {t_cx.lower()}."
-            sesion["active_rama"] = "rama_auto_manual"
+                    aviso = f"Archivo ejecutado: {len(filas)} cuenta(s) por {t_cx.lower()} agregadas."
+            sesion["active_rama"] = "rama_directo"
+
+        elif accion == "editar_partida_directa":
+            if sesion["estado_cierre"] == "CERRADO":
+                error = "El período está CERRADO. Reábrelo para editar."
+            else:
+                ed_tipo = request.form.get("ed_tipo") or "ENTRADA"
+                ed_cta = (request.form.get("ed_cuenta") or "").strip()
+                ed_con = (request.form.get("ed_concepto") or "Edición directa").strip()
+                try:
+                    ed_mon = abs(float(request.form.get("ed_monto", 0) or 0))
+                    if ed_cta and ed_mon > 0:
+                        if ed_tipo in ("ENTRADA", "SALIDA"):
+                            sesion["movimientos"].append({
+                                "fecha": datetime.now().strftime("%Y-%m-%d"),
+                                "tipo": ed_tipo,
+                                "cuenta": ed_cta,
+                                "concepto": ed_con,
+                                "monto": ed_mon,
+                            })
+                        else:
+                            t_cx = "COBRAR" if ed_tipo == "COBRAR" else "PAGAR"
+                            sesion["cuentas_cx"].append({
+                                "tipo": t_cx,
+                                "tercero": ed_cta,
+                                "doc": ed_con,
+                                "monto": ed_mon,
+                                "estado": "PENDIENTE",
+                            })
+                        aviso = "Edición directa aplicada y estados recalculados."
+                    else:
+                        error = "Completa la cuenta y un monto mayor a cero."
+                except ValueError:
+                    error = "Monto inválido."
+            sesion["active_rama"] = "rama_directo"
 
         elif accion == "ordenar_movs":
             sesion["orden_campo"] = request.form.get("orden_campo") or "fecha"
             sesion["orden_dir"] = request.form.get("orden_dir") or "desc"
             aviso = "Registros ordenados."
-            sesion["active_rama"] = "rama_auto_manual"
+            sesion["active_rama"] = "rama_directo"
 
         elif accion == "agregar_mov":
             if sesion["estado_cierre"] == "CERRADO":
