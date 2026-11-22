@@ -7,6 +7,8 @@ from flask import Flask, Response, render_template_string, request
 
 app = Flask(__name__)
 
+RUTA_PERSISTENCIA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "datos_contab_guardados.json")
+
 CODIGOS_ACCESO = {
     "DEMO2026": {"plan": "DEMO", "limite": 1000},
     "VIP100": {"plan": "VIP", "limite": 5000},
@@ -142,6 +144,74 @@ HTML_CONTAB = """<!DOCTYPE html>
     .brand-title { margin: 0; font-size: 2.35rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; }
     .brand-title span { color: var(--fucsia); }
     .brand-sub { margin: 8px 0 24px; font-size: 0.8rem; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; }
+
+    @keyframes bienvenidoEntrada {
+      0% { opacity: 0; transform: translateY(-10px) scale(0.985); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes pulsoSuave {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    .welcome-banner {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(125deg, rgba(219, 39, 119, 0.24) 0%, rgba(13, 25, 52, 0.98) 48%, rgba(22, 46, 102, 0.95) 100%);
+      border: 1.5px solid var(--fucsia);
+      box-shadow: 0 0 34px rgba(236, 72, 153, 0.24);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      animation: bienvenidoEntrada 0.55s ease-out both;
+    }
+    .welcome-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .welcome-main {
+      font-size: 1.24rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: #ffffff;
+    }
+    .welcome-brand {
+      color: var(--fucsia);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+    }
+    .welcome-tab {
+      display: inline-block;
+      margin: 0 10px;
+      padding: 2px 10px;
+      border-radius: 6px;
+      background: rgba(4, 7, 17, 0.75);
+      border: 1px solid rgba(244, 114, 182, 0.55);
+      color: #fbcfe8;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+    }
+    .welcome-cpc {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--fucsia-2), var(--fucsia));
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+    }
+    .welcome-resume {
+      margin-top: 10px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: #6ee7b7;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      animation: pulsoSuave 1.8s ease-in-out infinite;
+    }
 
     label {
       display: block;
@@ -429,6 +499,16 @@ HTML_CONTAB = """<!DOCTYPE html>
       </form>
     </div>
   {% else %}
+    <div class="welcome-banner" role="status" aria-live="polite">
+      <div class="welcome-top">
+        <div class="welcome-main">
+          Bienvenido a <span class="welcome-brand">C-CONTAB</span><span class="welcome-tab">↹ DYMARYVERA</span>
+        </div>
+        <span class="welcome-cpc">CPC 72440</span>
+      </div>
+      <div id="estado_reanudando" class="welcome-resume">Reanudando información...</div>
+    </div>
+
     <div class="topbar">
       <div>
         <strong style="font-size:1.15rem;letter-spacing:0.08em;">C-<span style="color:var(--fucsia)">CONTAB</span></strong>
@@ -483,7 +563,6 @@ HTML_CONTAB = """<!DOCTYPE html>
 
         <div id="rama_directo" class="rama-sec {% if active_rama != 'rama_directo' %}hidden{% endif %}">
           <div class="split-directo">
-            <!-- ESTADOS EDITABLES DIRECTAMENTE EN BLANCO -->
             <div class="card card-bg">
               <h2 style="margin-top:0;color:#f9a8d4;text-transform:uppercase;letter-spacing:0.05em;">Estados Financieros · Venezuela (Editable)</h2>
               <div class="kpi-row">
@@ -544,7 +623,6 @@ HTML_CONTAB = """<!DOCTYPE html>
               </form>
             </div>
 
-            <!-- SELECCIONAR Y EJECUTAR ARCHIVO -->
             <div class="card card-file">
               <h2 style="margin-top:0;color:#f9a8d4;text-transform:uppercase;letter-spacing:0.05em;">Seleccionar y Ejecutar Archivo</h2>
               <p style="color:var(--muted);font-size:0.88rem;line-height:1.5;margin-bottom:18px;">
@@ -837,6 +915,17 @@ HTML_CONTAB = """<!DOCTYPE html>
 </div>
 
 <script>
+  (function() {
+    const resumeEl = document.getElementById('estado_reanudando');
+    if (resumeEl) {
+      setTimeout(() => {
+        resumeEl.textContent = 'Información reanudada · Lista para trabajar';
+        resumeEl.style.animation = 'none';
+        resumeEl.style.color = '#f9a8d4';
+      }, 1600);
+    }
+  })();
+
   function openRama(ramaId, btn) {
     document.querySelectorAll('.rama-sec').forEach(s => s.classList.add('hidden'));
     document.querySelectorAll('.rama-btn').forEach(b => b.classList.remove('active'));
@@ -863,6 +952,72 @@ HTML_CONTAB = """<!DOCTYPE html>
 """
 
 SESIONES_CONTAB = {}
+
+
+def _crear_sesion_vacia():
+    return {
+        "uso": 0,
+        "active_rama": "rama_directo",
+        "active_renglon": "r01",
+        "active_renglon_label": "Seleccionar y Ejecutar Archivo",
+        "tono_fucsia": "#ec4899",
+        "estado_cierre": "ABIERTO",
+        "cierre_obs": "",
+        "orden_campo": "fecha",
+        "orden_dir": "desc",
+        "tasa_ref": 0.0,
+        "raw_est": {
+            "er_ingresos": 0.0,
+            "er_costos": 0.0,
+            "er_gastos": 0.0,
+            "er_otros": 0.0,
+            "er_islr": 0.0,
+            "bg_efectivo": 0.0,
+            "bg_cxc": 0.0,
+            "bg_inv": 0.0,
+            "bg_ppe": 0.0,
+            "bg_cxp": 0.0,
+            "bg_pas_lp": 0.0,
+            "bg_capital": 0.0,
+            "bg_util_ac": 0.0,
+        },
+        "movimientos": [],
+        "asientos": [],
+        "facturas": [],
+        "cuentas_cx": [],
+        "precios_actuales": [],
+    }
+
+
+def cargar_persitencia():
+    if not os.path.exists(RUTA_PERSISTENCIA):
+        return
+    try:
+        with open(RUTA_PERSISTENCIA, "r", encoding="utf-8") as fh:
+            data = json.load(fh)
+        if isinstance(data, dict):
+            for code, sdata in data.items():
+                if code in CODIGOS_ACCESO and isinstance(sdata, dict):
+                    base = _crear_sesion_vacia()
+                    for k, v in sdata.items():
+                        if k == "raw_est" and isinstance(v, dict):
+                            base["raw_est"].update(v)
+                        elif k in base:
+                            base[k] = v
+                    SESIONES_CONTAB[code] = base
+    except Exception:
+        pass
+
+
+def guardar_persitencia():
+    try:
+        with open(RUTA_PERSISTENCIA, "w", encoding="utf-8") as fh:
+            json.dump(SESIONES_CONTAB, fh, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+
+cargar_persitencia()
 
 
 def fmt_num(valor):
@@ -1016,38 +1171,8 @@ def obtener_sesion(codigo):
     if code not in CODIGOS_ACCESO:
         return None
     if code not in SESIONES_CONTAB:
-        SESIONES_CONTAB[code] = {
-            "uso": 0,
-            "active_rama": "rama_directo",
-            "active_renglon": "r01",
-            "active_renglon_label": "Seleccionar y Ejecutar Archivo",
-            "tono_fucsia": "#ec4899",
-            "estado_cierre": "ABIERTO",
-            "cierre_obs": "",
-            "orden_campo": "fecha",
-            "orden_dir": "desc",
-            "tasa_ref": 0.0,
-            "raw_est": {
-                "er_ingresos": 0.0,
-                "er_costos": 0.0,
-                "er_gastos": 0.0,
-                "er_otros": 0.0,
-                "er_islr": 0.0,
-                "bg_efectivo": 0.0,
-                "bg_cxc": 0.0,
-                "bg_inv": 0.0,
-                "bg_ppe": 0.0,
-                "bg_cxp": 0.0,
-                "bg_pas_lp": 0.0,
-                "bg_capital": 0.0,
-                "bg_util_ac": 0.0,
-            },
-            "movimientos": [],
-            "asientos": [],
-            "facturas": [],
-            "cuentas_cx": [],
-            "precios_actuales": [],
-        }
+        SESIONES_CONTAB[code] = _crear_sesion_vacia()
+        guardar_persitencia()
     return SESIONES_CONTAB[code]
 
 
@@ -1298,6 +1423,7 @@ def index():
                 error = "Indica concepto y valor."
             sesion["active_rama"] = "rama_aprender"
 
+        guardar_persitencia()
         return render_contab(codigo, sesion, error_msg=error, aviso_msg=aviso)
 
     return render_template_string(HTML_CONTAB, autorizado=False, tono_fucsia="#ec4899", error=None)
