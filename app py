@@ -1,0 +1,939 @@
+import csv
+import io
+import json
+import os
+from datetime import datetime
+from flask import Flask, Response, render_template_string, request
+
+app = Flask(__name__)
+
+CODIGOS_ACCESO = {
+    "DEMO2026": {"plan": "DEMO", "limite": 500},
+    "VIP100": {"plan": "VIP", "limite": 2000},
+    "CONTAB2026": {"plan": "PRO", "limite": 999999},
+}
+
+HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C-CONTAB // Contabilidad Venezuela</title>
+  <style>
+    :root {
+      --bg-dark: #060b19;
+      --bg-navy: #0b132b;
+      --panel: #0f1b38;
+      --panel-2: #15254b;
+      --border: #263b6e;
+      --text: #f8fafc;
+      --muted: #9fb3d9;
+      --fucsia: {{ tono_fucsia }};
+      --fucsia-2: #db2777;
+      --fucsia-soft: rgba(236, 72, 153, 0.16);
+      --ok: #10b981;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(circle at top right, rgba(236, 72, 153, 0.16), transparent 42%),
+                  radial-gradient(circle at top left, #13295c 0%, var(--bg-dark) 65%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .corner-tag {
+      position: fixed;
+      top: 10px;
+      right: 12px;
+      z-index: 50;
+      background: rgba(15, 27, 56, 0.9);
+      border: 1px solid var(--fucsia);
+      color: #f9a8d4;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 38px 14px 56px; }
+    .login-box {
+      max-width: 420px;
+      margin: 56px auto;
+      background: linear-gradient(160deg, var(--panel) 0%, var(--bg-navy) 100%);
+      border: 1px solid var(--fucsia);
+      box-shadow: 0 0 36px rgba(236, 72, 153, 0.24);
+      border-radius: 18px;
+      padding: 26px 24px;
+      text-align: center;
+    }
+    .brand-title {
+      margin: 0;
+      font-size: 2rem;
+      letter-spacing: 0.08em;
+      color: #fff;
+    }
+    .brand-title span { color: var(--fucsia); }
+    .brand-sub {
+      margin: 6px 0 18px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+    }
+    label { display: block; text-align: left; font-size: 0.82rem; color: var(--muted); margin-bottom: 5px; }
+    input, select, textarea {
+      width: 100%;
+      background: var(--bg-dark);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 11px;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--fucsia);
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      padding: 9px 13px;
+      font-weight: 600;
+      font-size: 0.84rem;
+    }
+    .btn-fucsia {
+      width: 100%;
+      background: linear-gradient(90deg, var(--fucsia-2), var(--fucsia));
+      color: #fff;
+      padding: 10px 14px;
+    }
+    .btn-navy {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-navy:hover { border-color: var(--fucsia); }
+    .btn-small { padding: 5px 9px; font-size: 0.76rem; border-radius: 8px; }
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }
+    .pill {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      background: var(--fucsia-soft);
+      color: #f9a8d4;
+      border: 1px solid rgba(236, 72, 153, 0.45);
+    }
+    .seg-nav {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .seg-btn {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+      text-align: left;
+      padding: 10px 12px;
+      font-size: 0.83rem;
+    }
+    .seg-btn.active {
+      background: var(--fucsia-soft);
+      border-color: var(--fucsia);
+      color: #fff;
+    }
+    .seg-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .hidden { display: none !important; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .card {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .kpi {
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--fucsia);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .kpi-lbl { font-size: 0.74rem; color: var(--muted); }
+    .kpi-val { font-size: 1.12rem; font-weight: 700; margin-top: 3px; }
+    .table-wrap {
+      overflow-x: auto;
+      max-height: 420px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    th, td { border: 1px solid var(--border); padding: 7px 8px; text-align: left; }
+    th { background: var(--panel-2); position: sticky; top: 0; z-index: 2; color: #f9a8d4; }
+    .alert-err {
+      background: rgba(239, 68, 68, 0.16);
+      border: 1px solid #ef4444;
+      color: #fecaca;
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+    }
+    .alert-ok {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--ok);
+      color: #a7f3d0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+    }
+    a { color: #f472b6; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="corner-tag">Totalmente contable</div>
+
+<div class="wrap">
+  {% if not autorizado %}
+    <div class="login-box">
+      <h1 class="brand-title">C-<span>CONTAB</span></h1>
+      <p class="brand-sub">CONTABILIDAD VENEZUELA // ACCESO</p>
+      {% if error %}
+        <div class="alert-err">{{ error }}</div>
+      {% endif %}
+      <form method="POST">
+        <label for="codigo">Clave / Código de acceso</label>
+        <input id="codigo" name="codigo" type="text" placeholder="DEMO2026, VIP100 o CONTAB2026" required />
+        <button class="btn-fucsia" type="submit">ENTRAR A C-CONTAB</button>
+      </form>
+    </div>
+  {% else %}
+    <div class="topbar">
+      <div>
+        <strong>C-<span style="color:var(--fucsia)">CONTAB</span></strong>
+        <span class="pill">{{ codigo }} · {{ plan }}</span>
+        {% if estado_cierre == 'CERRADO' %}
+          <span class="pill" style="background:rgba(16,185,129,0.16); color:#6ee7b7; border-color:#10b981;">PERÍODO CERRADO</span>
+        {% else %}
+          <span class="pill">PERÍODO ABIERTO</span>
+        {% endif %}
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <span class="pill">Uso: {{ uso }} / {{ limite }}</span>
+        <a class="btn-navy" style="padding:7px 11px; border-radius:10px;" href="/">Salir</a>
+      </div>
+    </div>
+
+    {% if error %}
+      <div class="alert-err">{{ error }}</div>
+    {% endif %}
+    {% if aviso %}
+      <div class="alert-ok">{{ aviso }}</div>
+    {% endif %}
+
+    <div class="seg-nav">
+      <button type="button" class="seg-btn {% if active_seg == 's1' %}active{% endif %}" onclick="openSeg('s1', this)">1. Entradas y Salidas</button>
+      <button type="button" class="seg-btn {% if active_seg == 's2' %}active{% endif %}" onclick="openSeg('s2', this)">2. Diario y Cierre</button>
+      <button type="button" class="seg-btn {% if active_seg == 's3' %}active{% endif %}" onclick="openSeg('s3', this)">3. Tributos (IVA / ISLR)</button>
+      <button type="button" class="seg-btn {% if active_seg == 's4' %}active{% endif %}" onclick="openSeg('s4', this)">4. Balances y Estados</button>
+      <button type="button" class="seg-btn {% if active_seg == 's5' %}active{% endif %}" onclick="openSeg('s5', this)">5. Archivos y Orden</button>
+      <button type="button" class="seg-btn {% if active_seg == 's6' %}active{% endif %}" onclick="openSeg('s6', this)">6. Ajustes</button>
+    </div>
+
+    <!-- SEGMENTO 1: ENTRADAS Y SALIDAS -->
+    <section id="s1" class="seg-panel {% if active_seg != 's1' %}hidden{% endif %}">
+      <h2 style="margin-top:0">Segmento 1 · Entradas y Salidas</h2>
+      <p style="color:var(--muted)">Registra entradas (ingresos/cobros) y salidas (egresos/pagos) de caja o banco de forma ordenada.</p>
+
+      <div class="grid-2">
+        <form method="POST" class="card">
+          <h3 style="margin-top:0; color:#f9a8d4;">Registrar movimiento</h3>
+          <input type="hidden" name="codigo" value="{{ codigo }}" />
+          <input type="hidden" name="active_seg" value="s1" />
+          <input type="hidden" name="accion" value="agregar_mov" />
+
+          <label for="mov_tipo">Tipo de movimiento</label>
+          <select id="mov_tipo" name="mov_tipo">
+            <option value="ENTRADA">Entrada (Ingreso / Cobro)</option>
+            <option value="SALIDA">Salida (Egreso / Pago)</option>
+          </select>
+
+          <label for="mov_cuenta">Cuenta contable (VEN)</label>
+          <select id="mov_cuenta" name="mov_cuenta">
+            <option value="Banco Nacional">Banco Nacional (Activo)</option>
+            <option value="Caja Chica">Caja Chica (Activo)</option>
+            <option value="Ventas / Ingresos">Ventas / Ingresos (Ingreso)</option>
+            <option value="Compras / Costos">Compras / Costos (Costo)</option>
+            <option value="Gastos Administrativos">Gastos Administrativos (Gasto)</option>
+            <option value="Cuentas por Cobrar">Cuentas por Cobrar (Activo)</option>
+            <option value="Cuentas por Pagar">Cuentas por Pagar (Pasivo)</option>
+          </select>
+
+          <label for="mov_desc">Concepto / Detalle</label>
+          <input id="mov_desc" name="mov_desc" type="text" placeholder="Ej: Cobro factura #0042 o Pago servicio" required />
+
+          <label for="mov_monto">Monto</label>
+          <input id="mov_monto" name="mov_monto" type="number" step="any" placeholder="Ej: 1500.00" required />
+
+          <label for="mov_fecha">Fecha</label>
+          <input id="mov_fecha" name="mov_fecha" type="date" />
+
+          <button type="submit" class="btn-fucsia">Guardar movimiento</button>
+        </form>
+
+        <div class="card">
+          <h3 style="margin-top:0; color:#f9a8d4;">Resumen de flujo</h3>
+          <div class="kpi-row">
+            <div class="kpi"><div class="kpi-lbl">Total Entradas</div><div class="kpi-val" style="color:var(--ok)">{{ resumen.entradas }}</div></div>
+            <div class="kpi"><div class="kpi-lbl">Total Salidas</div><div class="kpi-val" style="color:#f472b6">{{ resumen.salidas }}</div></div>
+            <div class="kpi"><div class="kpi-lbl">Saldo Neto</div><div class="kpi-val">{{ resumen.saldo }}</div></div>
+            <div class="kpi"><div class="kpi-lbl">Movimientos</div><div class="kpi-val">{{ resumen.cantidad }}</div></div>
+          </div>
+          <p style="color:var(--muted); font-size:0.84rem; line-height:1.5;">
+            Cada entrada suma al flujo positivo y cada salida resta del flujo disponible, alimentando automáticamente los estados contables y el cierre del período.
+          </p>
+        </div>
+      </div>
+
+      <div class="table-wrap" style="margin-top:14px;">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Fecha</th><th>Tipo</th><th>Cuenta</th><th>Concepto</th><th>Monto</th><th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in movimientos %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ m.fecha }}</td>
+                <td>
+                  {% if m.tipo == 'ENTRADA' %}
+                    <span style="color:var(--ok); font-weight:700;">ENTRADA</span>
+                  {% else %}
+                    <span style="color:#f472b6; font-weight:700;">SALIDA</span>
+                  {% endif %}
+                </td>
+                <td>{{ m.cuenta }}</td>
+                <td>{{ m.concepto }}</td>
+                <td>{{ m.monto }}</td>
+                <td>
+                  <form method="POST" style="display:inline; margin:0;">
+                    <input type="hidden" name="codigo" value="{{ codigo }}" />
+                    <input type="hidden" name="active_seg" value="s1" />
+                    <input type="hidden" name="accion" value="borrar_mov" />
+                    <input type="hidden" name="mov_idx" value="{{ loop.index0 }}" />
+                    <button type="submit" class="btn-navy btn-small">Eliminar</button>
+                  </form>
+                </td>
+              </tr>
+            {% else %}
+              <tr><td colspan="7" style="color:var(--muted)">No hay movimientos registrados.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SEGMENTO 2: LIBRO DIARIO Y CIERRE -->
+    <section id="s2" class="seg-panel {% if active_seg != 's2' %}hidden{% endif %}">
+      <h2 style="margin-top:0">Segmento 2 · Libro Diario y Cierre Contable</h2>
+      <p style="color:var(--muted)">Registra asientos de partida doble (Debe y Haber) y ejecuta o reabre el cierre del período.</p>
+
+      <div class="grid-2">
+        <form method="POST" class="card">
+          <h3 style="margin-top:0; color:#f9a8d4;">Nuevo asiento contable</h3>
+          <input type="hidden" name="codigo" value="{{ codigo }}" />
+          <input type="hidden" name="active_seg" value="s2" />
+          <input type="hidden" name="accion" value="agregar_asiento" />
+
+          <label for="as_cuenta">Cuenta</label>
+          <input id="as_cuenta" name="as_cuenta" type="text" placeholder="Ej: 1.1.01 Caja / Banco" required />
+
+          <label for="as_ref">Descripción / Referencia</label>
+          <input id="as_ref" name="as_ref" type="text" placeholder="Ej: Registro de venta / Factura" required />
+
+          <div class="grid-2">
+            <div>
+              <label for="as_debe">Debe</label>
+              <input id="as_debe" name="as_debe" type="number" step="any" value="0" />
+            </div>
+            <div>
+              <label for="as_haber">Haber</label>
+              <input id="as_haber" name="as_haber" type="number" step="any" value="0" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-fucsia">Registrar asiento</button>
+        </form>
+
+        <form method="POST" class="card">
+          <h3 style="margin-top:0; color:#f9a8d4;">Cierre del período</h3>
+          <input type="hidden" name="codigo" value="{{ codigo }}" />
+          <input type="hidden" name="active_seg" value="s2" />
+          <input type="hidden" name="accion" value="ejecutar_cierre" />
+
+          <div class="kpi-row">
+            <div class="kpi"><div class="kpi-lbl">Total Debe</div><div class="kpi-val">{{ diario_res.debe }}</div></div>
+            <div class="kpi"><div class="kpi-lbl">Total Haber</div><div class="kpi-val">{{ diario_res.haber }}</div></div>
+            <div class="kpi"><div class="kpi-lbl">Diferencia</div><div class="kpi-val">{{ diario_res.dif }}</div></div>
+            <div class="kpi"><div class="kpi-lbl">Estado</div><div class="kpi-val">{{ estado_cierre }}</div></div>
+          </div>
+
+          <label for="cierre_obs">Nota de cierre</label>
+          <input id="cierre_obs" name="cierre_obs" type="text" value="{{ cierre_obs }}" placeholder="Ej: Cierre mensual verificado" />
+
+          <button type="submit" class="btn-fucsia">
+            {% if estado_cierre == 'CERRADO' %}Reabrir período contable{% else %}Ejecutar cierre del período{% endif %}
+          </button>
+        </form>
+      </div>
+
+      <div class="table-wrap" style="margin-top:14px;">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Cuenta</th><th>Referencia</th><th>Debe</th><th>Haber</th></tr>
+          </thead>
+          <tbody>
+            {% for a in asientos %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ a.cuenta }}</td>
+                <td>{{ a.ref }}</td>
+                <td>{{ a.debe }}</td>
+                <td>{{ a.haber }}</td>
+              </tr>
+            {% else %}
+              <tr><td colspan="5" style="color:var(--muted)">Sin asientos en el libro diario.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SEGMENTO 3: TRIBUTOS VENEZUELA (IVA / ISLR) -->
+    <section id="s3" class="seg-panel {% if active_seg != 's3' %}hidden{% endif %}">
+      <h2 style="margin-top:0">Segmento 3 · Tributos (IVA y Retenciones)</h2>
+      <p style="color:var(--muted)">Calcula base imponible, IVA (16% general referencial), retención de IVA (75% o 100%) y retención de ISLR.</p>
+
+      <form method="POST" class="card">
+        <input type="hidden" name="codigo" value="{{ codigo }}" />
+        <input type="hidden" name="active_seg" value="s3" />
+        <input type="hidden" name="accion" value="calcular_tributos" />
+
+        <div class="grid-3">
+          <div>
+            <label for="trib_base">Base imponible / Monto bruto</label>
+            <input id="trib_base" name="trib_base" type="number" step="any" value="{{ trib.base }}" required />
+          </div>
+          <div>
+            <label for="trib_iva_pct">Alícuota IVA (%)</label>
+            <input id="trib_iva_pct" name="trib_iva_pct" type="number" step="any" value="{{ trib.iva_pct }}" />
+          </div>
+          <div>
+            <label for="trib_ret_iva_pct">Retención IVA (%)</label>
+            <select id="trib_ret_iva_pct" name="trib_ret_iva_pct">
+              <option value="75" {% if trib.ret_iva_pct == 75 %}selected{% endif %}>75%</option>
+              <option value="100" {% if trib.ret_iva_pct == 100 %}selected{% endif %}>100%</option>
+              <option value="0" {% if trib.ret_iva_pct == 0 %}selected{% endif %}>0% (No aplica)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label for="trib_islr_pct">Retención ISLR (%)</label>
+            <input id="trib_islr_pct" name="trib_islr_pct" type="number" step="any" value="{{ trib.islr_pct }}" />
+          </div>
+          <div style="display:flex; align-items:flex-end;">
+            <button type="submit" class="btn-fucsia">Calcular tributos</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-lbl">Monto IVA</div><div class="kpi-val">{{ trib.monto_iva }}</div></div>
+        <div class="kpi"><div class="kpi-lbl">Total Factura</div><div class="kpi-val">{{ trib.total_factura }}</div></div>
+        <div class="kpi"><div class="kpi-lbl">Retención IVA</div><div class="kpi-val" style="color:#f472b6">{{ trib.ret_iva }}</div></div>
+        <div class="kpi"><div class="kpi-lbl">Retención ISLR</div><div class="kpi-val" style="color:#f472b6">{{ trib.ret_islr }}</div></div>
+        <div class="kpi"><div class="kpi-lbl">Neto a Pagar/Cobrar</div><div class="kpi-val" style="color:var(--ok)">{{ trib.neto }}</div></div>
+      </div>
+    </section>
+
+    <!-- SEGMENTO 4: BALANCES Y ESTADOS -->
+    <section id="s4" class="seg-panel {% if active_seg != 's4' %}hidden{% endif %}">
+      <h2 style="margin-top:0">Segmento 4 · Estados y Balances</h2>
+      <p style="color:var(--muted)">Resumen de resultados y posición financiera calculado desde tus entradas, salidas y libro diario.</p>
+
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-lbl">Ingresos / Entradas</div><div class="kpi-val" style="color:var(--ok)">{{ resumen.entradas }}</div></div>
+        <div class="kpi"><div class="kpi-lbl">Egresos / Salidas</div><div class="kpi-val" style="color:#f472b6">{{ resumen.salidas }}</div></div>
+        <div class="kpi"><div class="kpi-lbl">Utilidad / Resultado</div><div class="kpi-val">{{ resumen.saldo }}</div></div>
+        <div class="kpi"><div class="kpi-lbl">Total Debe (Diario)</div><div class="kpi-val">{{ diario_res.debe }}</div></div>
+        <div class="kpi"><div class="kpi-lbl">Total Haber (Diario)</div><div class="kpi-val">{{ diario_res.haber }}</div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-top:0; color:#f9a8d4;">Estado de Resultados (Resumen)</h3>
+          <p><strong>Ingresos operativos:</strong> {{ resumen.entradas }}</p>
+          <p><strong>Salidas / Costos y Gastos:</strong> {{ resumen.salidas }}</p>
+          <p><strong>Resultado neto:</strong> {{ resumen.saldo }}</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0; color:#f9a8d4;">Balance de Comprobación (Diario)</h3>
+          <p><strong>Suma Debe:</strong> {{ diario_res.debe }}</p>
+          <p><strong>Suma Haber:</strong> {{ diario_res.haber }}</p>
+          <p><strong>Cuadre (Debe - Haber):</strong> {{ diario_res.dif }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEGMENTO 5: ARCHIVOS Y ORDEN -->
+    <section id="s5" class="seg-panel {% if active_seg != 's5' %}hidden{% endif %}">
+      <h2 style="margin-top:0">Segmento 5 · Archivos y Ordenamiento</h2>
+      <p style="color:var(--muted)">Importa archivos contables (.csv, .txt, .json), pega filas, ordénalas y descarga en CSV.</p>
+
+      <div class="grid-2">
+        <form method="POST" enctype="multipart/form-data" class="card">
+          <h3 style="margin-top:0; color:#f9a8d4;">Importar o pegar movimientos</h3>
+          <input type="hidden" name="codigo" value="{{ codigo }}" />
+          <input type="hidden" name="active_seg" value="s5" />
+          <input type="hidden" name="accion" value="importar_contable" />
+
+          <label for="archivo_cont">Archivo (.csv, .txt, .json)</label>
+          <input id="archivo_cont" name="archivo_cont" type="file" accept=".csv,.txt,.json" />
+
+          <label for="texto_cont">O pegar líneas (Fecha, Tipo, Cuenta, Concepto, Monto)</label>
+          <textarea id="texto_cont" name="texto_cont" rows="4" placeholder="2026-11-22, ENTRADA, Banco Nacional, Venta del día, 500"></textarea>
+
+          <button type="submit" class="btn-fucsia">Cargar a C-CONTAB</button>
+        </form>
+
+        <form method="POST" class="card">
+          <h3 style="margin-top:0; color:#f9a8d4;">Ordenar movimientos</h3>
+          <input type="hidden" name="codigo" value="{{ codigo }}" />
+          <input type="hidden" name="active_seg" value="s5" />
+          <input type="hidden" name="accion" value="ordenar_movs" />
+
+          <label for="orden_campo">Ordenar por</label>
+          <select id="orden_campo" name="orden_campo">
+            <option value="fecha" {% if orden_campo == 'fecha' %}selected{% endif %}>Fecha</option>
+            <option value="monto" {% if orden_campo == 'monto' %}selected{% endif %}>Monto</option>
+            <option value="tipo" {% if orden_campo == 'tipo' %}selected{% endif %}>Tipo (Entrada / Salida)</option>
+            <option value="cuenta" {% if orden_campo == 'cuenta' %}selected{% endif %}>Cuenta</option>
+          </select>
+
+          <label for="orden_dir">Sentido</label>
+          <select id="orden_dir" name="orden_dir">
+            <option value="desc" {% if orden_dir == 'desc' %}selected{% endif %}>Descendente</option>
+            <option value="asc" {% if orden_dir == 'asc' %}selected{% endif %}>Ascendente</option>
+          </select>
+
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">
+            <button type="submit" class="btn-fucsia" style="flex:1;">Ordenar</button>
+            <a class="btn-navy" style="padding:10px 14px; border-radius:10px;" href="/descargar-contable?codigo={{ codigo }}">Exportar CSV</a>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- SEGMENTO 6: AJUSTES -->
+    <section id="s6" class="seg-panel {% if active_seg != 's6' %}hidden{% endif %}">
+      <h2 style="margin-top:0">Segmento 6 · Ajustes</h2>
+      <p style="color:var(--muted)">Ajustes rápidos de estilo dentro de la paleta azul oscuro y fucsia de C-CONTAB.</p>
+
+      <form method="POST" class="card" style="max-width:480px;">
+        <input type="hidden" name="codigo" value="{{ codigo }}" />
+        <input type="hidden" name="active_seg" value="s6" />
+        <input type="hidden" name="accion" value="guardar_ajustes_contab" />
+
+        <label for="tono_fucsia">Tono fucsia principal</label>
+        <select id="tono_fucsia" name="tono_fucsia">
+          <option value="#ec4899" {% if tono_fucsia == '#ec4899' %}selected{% endif %}>Fucsia vibrante</option>
+          <option value="#f43f5e" {% if tono_fucsia == '#f43f5e' %}selected{% endif %}>Rosa fucsia intenso</option>
+          <option value="#d946ef" {% if tono_fucsia == '#d946ef' %}selected{% endif %}>Fucsia magenta</option>
+        </select>
+
+        <button type="submit" class="btn-fucsia">Guardar ajuste</button>
+      </form>
+    </section>
+  {% endif %}
+</div>
+
+<script>
+  function openSeg(id, btn) {
+    document.querySelectorAll('.seg-panel').forEach(p => p.classList.add('hidden'));
+    document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+    const panel = document.getElementById(id);
+    if (panel) panel.classList.remove('hidden');
+    if (btn) btn.classList.add('active');
+    document.querySelectorAll('input[name="active_seg"]').forEach(inp => inp.value = id);
+  }
+</script>
+</body>
+</html>
+"""
+
+SESIONES_CONTAB = {}
+
+
+def _fmt_num(v):
+    try:
+        num = float(v)
+        if num.is_integer():
+            return str(int(num))
+        return f"{round(num, 2):.2f}"
+    except (TypeError, ValueError):
+        return "0"
+
+
+def obtener_sesion(codigo):
+    code = (codigo or "").strip().upper()
+    if code not in CODIGOS_ACCESO:
+        return None
+    if code not in SESIONES_CONTAB:
+        SESIONES_CONTAB[code] = {
+            "uso": 0,
+            "active_seg": "s1",
+            "tono_fucsia": "#ec4899",
+            "estado_cierre": "ABIERTO",
+            "cierre_obs": "Período activo listo para operar",
+            "orden_campo": "fecha",
+            "orden_dir": "desc",
+            "movimientos": [
+                {"fecha": "2026-11-20", "tipo": "ENTRADA", "cuenta": "Banco Nacional", "concepto": "Cobro cliente inicial", "monto": 1200.0},
+                {"fecha": "2026-11-21", "tipo": "SALIDA", "cuenta": "Gastos Administrativos", "concepto": "Servicio de internet y oficina", "monto": 180.0},
+            ],
+            "asientos": [
+                {"cuenta": "Banco Nacional", "ref": "Apertura / Cobro cliente", "debe": 1200.0, "haber": 0.0},
+                {"cuenta": "Ingresos por Servicios", "ref": "Apertura / Cobro cliente", "debe": 0.0, "haber": 1200.0},
+            ],
+            "trib": {
+                "base": 1000.0,
+                "iva_pct": 16.0,
+                "ret_iva_pct": 75.0,
+                "islr_pct": 2.0,
+                "monto_iva": "160.00",
+                "total_factura": "1160.00",
+                "ret_iva": "120.00",
+                "ret_islr": "20.00",
+                "neto": "1020.00",
+            },
+        }
+    return SESIONES_CONTAB[code]
+
+
+def _ordenar_movs(movs, campo="fecha", direccion="desc"):
+    rev = (direccion == "desc")
+    if campo == "monto":
+        return sorted(movs, key=lambda x: float(x.get("monto", 0) or 0), reverse=rev)
+    if campo == "tipo":
+        return sorted(movs, key=lambda x: str(x.get("tipo", "")).lower(), reverse=rev)
+    if campo == "cuenta":
+        return sorted(movs, key=lambda x: str(x.get("cuenta", "")).lower(), reverse=rev)
+    return sorted(movs, key=lambda x: str(x.get("fecha", "")), reverse=rev)
+
+
+def _calcular_resumen(movs):
+    entradas = sum(float(m.get("monto", 0) or 0) for m in movs if m.get("tipo") == "ENTRADA")
+    salidas = sum(float(m.get("monto", 0) or 0) for m in movs if m.get("tipo") == "SALIDA")
+    saldo = entradas - salidas
+    return {
+        "entradas": _fmt_num(entradas),
+        "salidas": _fmt_num(salidas),
+        "saldo": _fmt_num(saldo),
+        "cantidad": len(movs),
+    }
+
+
+def _calcular_diario(asientos):
+    debe = sum(float(a.get("debe", 0) or 0) for a in asientos)
+    haber = sum(float(a.get("haber", 0) or 0) for a in asientos)
+    return {
+        "debe": _fmt_num(debe),
+        "haber": _fmt_num(haber),
+        "dif": _fmt_num(debe - haber),
+    }
+
+
+def _parsear_movimientos_texto(texto):
+    nuevos = []
+    hoy = datetime.now().strftime("%Y-%m-%d")
+    for linea in (texto or "").splitlines():
+        linea = linea.strip()
+        if not linea:
+            continue
+        partes = [p.strip() for p in linea.split(",")]
+        fecha = partes[0] if len(partes) > 0 and partes[0] else hoy
+        tipo_raw = (partes[1] if len(partes) > 1 else "ENTRADA").upper()
+        tipo = "SALIDA" if "SAL" in tipo_raw or "EGR" in tipo_raw else "ENTRADA"
+        cuenta = partes[2] if len(partes) > 2 and partes[2] else "Banco Nacional"
+        concepto = partes[3] if len(partes) > 3 and partes[3] else "Movimiento importado"
+        try:
+            monto = abs(float(partes[4])) if len(partes) > 4 else 0.0
+        except ValueError:
+            monto = 0.0
+        nuevos.append({
+            "fecha": fecha,
+            "tipo": tipo,
+            "cuenta": cuenta,
+            "concepto": concepto,
+            "monto": monto,
+        })
+    return nuevos
+
+
+def render_contap(codigo, sesion, error_msg=None, aviso_msg=None):
+    info = CODIGOS_ACCESO[codigo]
+    movs_ord = _ordenar_movs(sesion["movimientos"], sesion["orden_campo"], sesion["orden_dir"])
+    return render_template_string(
+        HTML_TEMPLATE,
+        autorizado=True,
+        error=error_msg,
+        aviso=aviso_msg,
+        codigo=codigo,
+        plan=info["plan"],
+        limite=info["limite"],
+        uso=sesion["uso"],
+        active_seg=sesion.get("active_seg", "s1"),
+        tono_fucsia=sesion.get("tono_fucsia", "#ec4899"),
+        estado_cierre=sesion.get("estado_cierre", "ABIERTO"),
+        cierre_obs=sesion.get("cierre_obs", ""),
+        orden_campo=sesion.get("orden_campo", "fecha"),
+        orden_dir=sesion.get("orden_dir", "desc"),
+        movimientos=movs_ord,
+        resumen=_calcular_resumen(movs_ord),
+        asientos=sesion["asientos"],
+        diario_res=_calcular_diario(sesion["asientos"]),
+        trib=sesion["trib"],
+    )
+
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        codigo = (request.form.get("codigo") or "").strip().upper()
+        sesion = obtener_sesion(codigo)
+        if not sesion:
+            return render_template_string(
+                HTML_TEMPLATE,
+                autorizado=False,
+                tono_fucsia="#ec4899",
+                error="Código no válido. Usa DEMO2026, VIP100 o CONTAB2026.",
+            )
+
+        seg_sel = request.form.get("active_seg")
+        if seg_sel in ("s1", "s2", "s3", "s4", "s5", "s6"):
+            sesion["active_seg"] = seg_sel
+
+        limite = CODIGOS_ACCESO[codigo]["limite"]
+        accion = request.form.get("accion")
+        aviso = None
+        error = None
+
+        if accion:
+            if sesion["uso"] >= limite:
+                return render_contap(codigo, sesion, error_msg="Límite de uso alcanzado.")
+            sesion["uso"] += 1
+
+        if accion == "agregar_mov":
+            if sesion["estado_cierre"] == "CERRADO":
+                error = "El período está CERRADO. Reábrelo en '2. Diario y Cierre' para registrar movimientos."
+            else:
+                tipo = request.form.get("mov_tipo") or "ENTRADA"
+                cuenta = request.form.get("mov_cuenta") or "Banco Nacional"
+                concepto = (request.form.get("mov_desc") or "").strip()
+                fecha = (request.form.get("mov_fecha") or "").strip() or datetime.now().strftime("%Y-%m-%d")
+                try:
+                    monto = abs(float(request.form.get("mov_monto", 0)))
+                    if concepto and monto > 0:
+                        sesion["movimientos"].append({
+                            "fecha": fecha,
+                            "tipo": tipo,
+                            "cuenta": cuenta,
+                            "concepto": concepto,
+                            "monto": monto,
+                        })
+                        aviso = f"{tipo} registrada en '{cuenta}'."
+                    else:
+                        error = "Completa el concepto y un monto mayor a cero."
+                except ValueError:
+                    error = "Monto inválido."
+            sesion["active_seg"] = "s1"
+
+        elif accion == "borrar_mov":
+            if sesion["estado_cierre"] == "CERRADO":
+                error = "No puedes eliminar movimientos mientras el período esté CERRADO."
+            else:
+                try:
+                    idx = int(request.form.get("mov_idx", -1))
+                    movs_ord = _ordenar_movs(sesion["movimientos"], sesion["orden_campo"], sesion["orden_dir"])
+                    if 0 <= idx < len(movs_ord):
+                        sesion["movimientos"].remove(movs_ord[idx])
+                        aviso = "Movimiento eliminado."
+                except Exception:
+                    error = "No se pudo eliminar el movimiento."
+            sesion["active_seg"] = "s1"
+
+        elif accion == "agregar_asiento":
+            if sesion["estado_cierre"] == "CERRADO":
+                error = "El período está CERRADO. Reábrelo para registrar asientos."
+            else:
+                cuenta = (request.form.get("as_cuenta") or "").strip()
+                ref = (request.form.get("as_ref") or "").strip()
+                try:
+                    debe = abs(float(request.form.get("as_debe", 0) or 0))
+                    haber = abs(float(request.form.get("as_haber", 0) or 0))
+                    if cuenta and ref and (debe > 0 or haber > 0):
+                        sesion["asientos"].append({"cuenta": cuenta, "ref": ref, "debe": debe, "haber": haber})
+                        aviso = "Asiento agregado al libro diario."
+                    else:
+                        error = "Indica cuenta, referencia y un monto en Debe o Haber."
+                except ValueError:
+                    error = "Valores de Debe/Haber inválidos."
+            sesion["active_seg"] = "s2"
+
+        elif accion == "ejecutar_cierre":
+            obs = (request.form.get("cierre_obs") or "").strip()
+            if obs:
+                sesion["cierre_obs"] = obs
+            if sesion["estado_cierre"] == "CERRADO":
+                sesion["estado_cierre"] = "ABIERTO"
+                aviso = "Período reabierto."
+            else:
+                sesion["estado_cierre"] = "CERRADO"
+                aviso = "Cierre contable ejecutado correctamente."
+            sesion["active_seg"] = "s2"
+
+        elif accion == "calcular_tributos":
+            try:
+                base = abs(float(request.form.get("trib_base", 0) or 0))
+                iva_pct = abs(float(request.form.get("trib_iva_pct", 16) or 0))
+                ret_iva_pct = abs(float(request.form.get("trib_ret_iva_pct", 75) or 0))
+                islr_pct = abs(float(request.form.get("trib_islr_pct", 0) or 0))
+
+                monto_iva = base * (iva_pct / 100.0)
+                total_fact = base + monto_iva
+                ret_iva = monto_iva * (ret_iva_pct / 100.0)
+                ret_islr = base * (islr_pct / 100.0)
+                neto = total_fact - ret_iva - ret_islr
+
+                sesion["trib"] = {
+                    "base": _fmt_num(base),
+                    "iva_pct": iva_pct,
+                    "ret_iva_pct": ret_iva_pct,
+                    "islr_pct": islr_pct,
+                    "monto_iva": _fmt_num(monto_iva),
+                    "total_factura": _fmt_num(total_fact),
+                    "ret_iva": _fmt_num(ret_iva),
+                    "ret_islr": _fmt_num(ret_islr),
+                    "neto": _fmt_num(neto),
+                }
+                aviso = "Cálculo tributario actualizado."
+            except ValueError:
+                error = "Revisa los valores numéricos ingresados."
+            sesion["active_seg"] = "s3"
+
+        elif accion == "importar_contable":
+            nuevos = []
+            arch = request.files.get("archivo_cont")
+            if arch and arch.filename:
+                raw_txt = arch.read().decode("utf-8", errors="ignore").strip()
+                if arch.filename.lower().endswith(".json") or raw_txt.startswith("["):
+                    data = json.loads(raw_txt)
+                    if isinstance(data, list):
+                        for item in data:
+                            if isinstance(item, dict):
+                                nuevos.append({
+                                    "fecha": str(item.get("fecha") or datetime.now().strftime("%Y-%m-%d")),
+                                    "tipo": "SALIDA" if str(item.get("tipo", "")).upper() == "SALIDA" else "ENTRADA",
+                                    "cuenta": str(item.get("cuenta") or "Banco Nacional"),
+                                    "concepto": str(item.get("concepto") or "Importado JSON"),
+                                    "monto": abs(float(item.get("monto", 0) or 0)),
+                                })
+                else:
+                    nuevos.extend(_parsear_movimientos_texto(raw_txt))
+
+            pegar_txt = request.form.get("texto_cont") or ""
+            if pegar_txt.strip():
+                nuevos.extend(_parsear_movimientos_texto(pegar_txt))
+
+            if nuevos:
+                sesion["movimientos"].extend(nuevos)
+                aviso = f"Se cargaron {len(nuevos)} movimiento(s)."
+            else:
+                error = "No se detectaron filas válidas para importar."
+            sesion["active_seg"] = "s5"
+
+        elif accion == "ordenar_movs":
+            sesion["orden_campo"] = request.form.get("orden_campo") or "fecha"
+            sesion["orden_dir"] = request.form.get("orden_dir") or "desc"
+            aviso = "Movimientos ordenados."
+            sesion["active_seg"] = "s5"
+
+        elif accion == "guardar_ajustes_contab":
+            tono = (request.form.get("tono_fucsia") or "#ec4899").strip()
+            if tono in ("#ec4899", "#f43f5e", "#d946ef"):
+                sesion["tono_fucsia"] = tono
+            aviso = "Ajuste guardado."
+            sesion["active_seg"] = "s6"
+
+        return render_contap(codigo, sesion, error_msg=error, aviso_msg=aviso)
+
+    return render_template_string(HTML_TEMPLATE, autorizado=False, tono_fucsia="#ec4899", error=None)
+
+
+@app.route("/descargar-contable")
+def descargar_contable():
+    codigo = (request.args.get("codigo") or "").strip().upper()
+    sesion = obtener_sesion(codigo)
+    if not sesion:
+        return "Código no autorizado", 403
+    movs_ord = _ordenar_movs(sesion["movimientos"], sesion["orden_campo"], sesion["orden_dir"])
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(["Fecha", "Tipo", "Cuenta", "Concepto", "Monto"])
+    for m in movs_ord:
+        writer.writerow([m["fecha"], m["tipo"], m["cuenta"], m["concepto"], m["monto"]])
+    return Response(
+        buf.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=c_contab_movimientos.csv"},
+    )
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
